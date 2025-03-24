@@ -105,7 +105,7 @@ const formatTraffic = (bytes: number | null, t: (key: string) => string) => {
   return `${(bytes / 1024 ** 4).toFixed(2)} ${t("TB")}`;
 };
 
-export const calculateRemainingTime = (
+const calculateRemainingTime = (
   expire: string | null,
   t: (key: string) => string
 ): string => {
@@ -134,7 +134,7 @@ export const calculateRemainingTime = (
   return "∞";
 };
 
-export const formatDate = (dateString: string): string => {
+const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
   
   if (!dateString) return "∞";

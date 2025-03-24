@@ -1,12 +1,12 @@
-import { Chart } from "@/components/chart/chart";
-import { SectionCards } from "@/components/cards";
-import LanguageSelector from "@/components/nav/lang";
+import { Chart } from "@/sections/chart/chart";
+import { SectionCards } from "@/sections/cards";
+import LanguageSelector from "@/sections/nav/lang";
 import { useTranslation } from "react-i18next";
-import { ModeToggle } from "@/components/nav/theme-toggle";
+import { ModeToggle } from "@/sections/nav/theme-toggle";
 import { Suspense, useState } from "react";
 import { addDays } from "date-fns";
 import useSWR from "swr";
-import { Box } from "@/components/boxcart/box";
+import { Box } from "@/sections/boxcart/box";
 
 interface CardsData {
   totalTraffic: number;

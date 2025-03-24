@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "react-i18next";
-import AppsTab from "@/components/boxcart/apps";
-import ConfigsTab from "@/components/boxcart/configs";
+import AppsTab from "@/sections/boxcart/apps";
+import ConfigsTab from "@/sections/boxcart/configs";
 
 export function Box() {
   const { t } = useTranslation();

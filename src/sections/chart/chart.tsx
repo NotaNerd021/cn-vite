@@ -16,7 +16,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useTranslation } from "react-i18next";
-import { SelectDateView } from "@/components/chart/time-picker";
+import { SelectDateView } from "@/sections/chart/time-picker";
 
 interface ChartProps {
   chartData: [timestamp: string, usage: number][];
