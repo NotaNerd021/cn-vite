@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Test Build Project
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # Step 3: Install pnpm
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      # Step 4: Install dependencies with pnpm
+      - name: Install dependencies
+        run: pnpm install
+
+      # Step 5: Build the project
+      - name: Build project
+        run: pnpm run build
+
+      # Step 5.5: Verify build output
+      - name: List build directory
+        run: ls -al dist/
