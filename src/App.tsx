@@ -30,14 +30,16 @@ function App() {
   const [endTime, setEndTime] = useState(new Date());
 
   const { data, error } = useSWR(
-    window.location.pathname ? `${import.meta.env.VITE_PANEL_DOMAIN}${window.location.pathname}/info` : null,
+    `${import.meta.env?.VITE_PANEL_DOMAIN || window.location.origin}${
+      window.location.pathname
+    }/info`,
     fetcher
   );
 
   const { data: chartData, error: chartError } = useSWR(
-    window.location.pathname
-      ? `${import.meta.env.VITE_PANEL_DOMAIN}${window.location.pathname}/usage?start=${startTime.toISOString()}&end=${endTime.toISOString()}`
-      : null,
+    `${import.meta.env?.VITE_PANEL_DOMAIN || window.location.origin}${
+      window.location.pathname
+    }/usage?start=${startTime.toISOString()}&end=${endTime.toISOString()}`,
     fetcher
   );
 
@@ -103,42 +105,40 @@ function App() {
 
   const isRTL = language === "fa" || language === "ar";
 
-  console.log(data);
-
   if (error || chartError) return <div>Error loading data...</div>;
   if (!data) return <div>Loading...</div>;
 
   return (
-      <div
-        dir={isRTL ? "rtl" : "ltr"}
-        className="@container/main flex flex-1 flex-col gap-2 p-5"
-      >
-        <div className="flex flex-col-reverse gap-4 justify-center">
-          <div className="block md:flex justify-between flex-row-reverse mx-0 md:mx-6">
-            <div className="flex flex-row justify-between mx-5 md:mx-0 gap-3">
-              <LanguageSelector />
-              <ModeToggle />
-            </div>
-            <h1 className="scroll-m-20 text-3xl font-normal tracking-tight lg:text-4xl text-center py-5 grid-cols-5">
-              {t("subStats")}
-            </h1>
+    <div
+      dir={isRTL ? "rtl" : "ltr"}
+      className="@container/main flex flex-1 flex-col gap-2 p-5"
+    >
+      <div className="flex flex-col-reverse gap-4 justify-center">
+        <div className="block md:flex justify-between flex-row-reverse mx-0 md:mx-6">
+          <div className="flex flex-row justify-between mx-5 md:mx-0 gap-3">
+            <LanguageSelector />
+            <ModeToggle />
+          </div>
+          <h1 className="scroll-m-20 text-3xl font-normal tracking-tight lg:text-4xl text-center py-5 grid-cols-5">
+            {t("subStats")}
+          </h1>
+        </div>
+      </div>
+      <Suspense fallback="loading...">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+          <SectionCards cardsData={cardsData} />
+          <div className="grid grid-cols-1 md:grid-cols-2 md:gap-0 gap-4">
+            <Box subUrl={data?.subscription_url} />
+            <Chart
+              chartData={chartData?.usages}
+              totalUsage={chartData?.total}
+              activeChart={activeChart}
+              setActiveChart={updateChart}
+            />
           </div>
         </div>
-        <Suspense fallback="loading...">
-          <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-            <SectionCards cardsData={cardsData} />
-            <div className="grid grid-cols-1 md:grid-cols-2 md:gap-0 gap-4">
-              <Box />
-              <Chart
-                chartData={chartData?.usages}
-                totalUsage={chartData?.total}
-                activeChart={activeChart}
-                setActiveChart={updateChart}
-              />
-            </div>
-          </div>
-        </Suspense>
-      </div>
+      </Suspense>
+    </div>
   );
 }
 
