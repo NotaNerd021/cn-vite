@@ -12,8 +12,21 @@ import {
   IconBrandWindowsFilled,
 } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
+import { JSX } from "react";
 
-const AppsTab = () => {
+interface AppsTabProps {
+  url: string;
+}
+
+interface App {
+  name: string;
+  icon: JSX.Element;
+  format?: string;
+  download?: string;
+  isCustom?: boolean;
+}
+
+const AppsTab = ({ url }: AppsTabProps) => {
   const {
     t,
     i18n: { language },
@@ -31,14 +44,17 @@ const AppsTab = () => {
         {
           name: "Streisand",
           icon: <IconBrandApple />,
+          format: "streisand://import/{url}",
         },
         {
           name: "V2box",
           icon: <IconBrandApple />,
+          format: "v2box://install-sub?url={url}&name=MattDev",
         },
         {
-          name: "V2rayU",
+          name: "Shadowrocket",
           icon: <IconBrandApple />,
+          isCustom: true,
         },
       ],
     },
@@ -46,19 +62,17 @@ const AppsTab = () => {
       value: "android",
       label: t("android"),
       icon: <IconBrandAndroid />,
-      content: "Change your password here.",
+      content: t("androidContent"),
       apps: [
         {
           name: "V2rayNG",
           icon: <IconBrandAndroid />,
+          format: "v2rayng://install-config?url={url}",
         },
         {
-          name: "V2rayGO",
+          name: "V2box",
           icon: <IconBrandAndroid />,
-        },
-        {
-          name: "V2rayDroid",
-          icon: <IconBrandAndroid />,
+          format: "v2box://install-sub?url={url}&name=MattDev",
         },
       ],
     },
@@ -66,19 +80,35 @@ const AppsTab = () => {
       value: "windows",
       label: t("windows"),
       icon: <IconBrandWindowsFilled />,
-      content: "Make changes to your account here.",
+      content: t("windowsContent"),
       apps: [
         {
           name: "V2rayN",
           icon: <IconBrandWindowsFilled />,
+          download:
+            "https://github.com/2dust/v2rayN/releases/download/7.10.5/v2rayN-windows-64-SelfContained.zip",
         },
         {
-          name: "V2rayW",
+          name: "Flclash",
           icon: <IconBrandWindowsFilled />,
+          download:
+            "https://github.com/chen08209/FlClash/releases/download/v0.8.80/FlClash-0.8.80-windows-amd64-setup.exe",
         },
       ],
     },
   ];
+
+  const handleOnClick = (app: App) => {
+    if (app.download) {
+      window.open(app.download, "_blank");
+    } else if (app.format) {
+      window.open(app.format.replace("{url}", url), "_blank");
+    } else if (app.isCustom) {
+      const encodedURL = btoa(url);
+      const shadowrocketLink = "sub://" + encodedURL;
+      window.location.href = shadowrocketLink;
+    } else return;
+  };
 
   return (
     <TabsContent value="apps">
@@ -112,7 +142,7 @@ const AppsTab = () => {
                       key={app.name}
                       className="hover:bg-neutral-100 hover:dark:bg-neutral-600 cursor-pointer transition-colors duration-200"
                       role="button"
-                      // onClick={app.onClick}
+                      onClick={() => handleOnClick(app)}
                     >
                       <CardHeader className="text-center">
                         <CardTitle>{app.name}</CardTitle>

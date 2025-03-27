@@ -4,7 +4,11 @@ import { useTranslation } from "react-i18next";
 import AppsTab from "@/sections/boxcart/apps";
 import ConfigsTab from "@/sections/boxcart/configs";
 
-export function Box() {
+interface BoxProps {
+  subUrl: string;
+}
+
+export function Box({ subUrl }: BoxProps) {
   const { t } = useTranslation();
   return (
     <Card className="mx-4 md:mx-3 md:ms-5">
@@ -16,7 +20,7 @@ export function Box() {
           </TabsList>
         </CardHeader>
         <CardContent className="px-2 sm:p-6">
-          <AppsTab />
+          <AppsTab url={subUrl} />
 
           <ConfigsTab />
         </CardContent>
