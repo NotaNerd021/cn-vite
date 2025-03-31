@@ -27,6 +27,15 @@ export function SectionCards({
   } = useTranslation();
   const isRTL = language === "fa" || language === "ar";
 
+  const remainedTraffic = () => {
+    if (data_limit - totalTraffic < 0) {
+      return t("limited");
+    } else if (data_limit - totalTraffic > 0) {
+      return formatTraffic(data_limit - totalTraffic, t);
+    }
+    return t("infinity");
+  };
+
   return (
     <div
       dir={isRTL ? "rtl" : "ltr"}
@@ -68,7 +77,7 @@ export function SectionCards({
         <CardHeader className="relative">
           <CardDescription>{t("remainingTraffic")}</CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-            {formatTraffic(data_limit - totalTraffic, t)}
+            {remainedTraffic()}
           </CardTitle>
         </CardHeader>
       </Card>
@@ -80,7 +89,6 @@ export function SectionCards({
           </CardTitle>
         </CardHeader>
       </Card>
-      
     </div>
   );
 }
