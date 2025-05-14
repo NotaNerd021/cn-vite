@@ -43,5 +43,6 @@
   "appleContent": "iOS 和 macOS 用户将配置导入这些应用。",
   "androidContent": "安卓用户将配置导入这些应用。",
   "windowsContent": "Windows 用户可以下载这些应用。",
-  "linkCopied": "链接已复制"
+  "linkCopied": "链接已复制",
+  "subQrcode": "订阅二维码"
 }
