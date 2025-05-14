@@ -7,6 +7,10 @@ import { Suspense, useState } from "react";
 import { addDays } from "date-fns";
 import useSWR from "swr";
 import { Box } from "@/sections/boxcart/box";
+import QrCode from "./components/qrcode";
+import { Button } from "./components/ui/button";
+import { QrCodeIcon } from "lucide-react";
+import { getStatus } from "./lib/utils";
 
 interface CardsData {
   totalTraffic: number;
@@ -36,30 +40,36 @@ function App() {
     fetcher
   );
 
-  const { data: chartData, error: chartError } = useSWR(
-    `${import.meta.env?.VITE_PANEL_DOMAIN || window.location.origin}${
-      window.location.pathname
-    }/usage?start=${startTime.toISOString()}&end=${endTime.toISOString()}`,
+  const isMarzneshin =
+    new URL(window.location.href).pathname.split("/").filter(Boolean).length ===
+    3;
+
+  const { data: configData } = useSWR(
+    isMarzneshin
+      ? `${import.meta.env?.VITE_PANEL_DOMAIN || window.location.origin}${
+          window.location.pathname
+        }`
+      : null,
     fetcher
   );
+
+  const { data: chartData, error: chartError } = useSWR(
+    isMarzneshin
+      ? `${import.meta.env?.VITE_PANEL_DOMAIN || window.location.origin}${
+          window.location.pathname
+        }/usage?start=${startTime.toISOString()}&end=${endTime.toISOString()}`
+      : null,
+    fetcher
+  );
+
+  console.log(data);
 
   const cardsData: CardsData = data
     ? {
         totalTraffic: data.used_traffic,
         data_limit: data.data_limit,
-        expire_date: data.expire_date,
-        status:
-          data?.data_limit_reached || data?.expired || !data?.enabled
-            ? t("disabled")
-            : data?.expire_strategy === "start_on_first_use" && !data?.online_at
-            ? t("on_hold")
-            : (data?.used_traffic &&
-                data?.data_limit &&
-                data?.used_traffic / data?.data_limit > 0.9) ||
-              (data?.expire_at &&
-                new Date(data?.expire_at) < addDays(new Date(), -3))
-            ? t("nearToExpire")
-            : t("active"),
+        expire_date: isMarzneshin ? data.expire_date : data.expire,
+        status: getStatus(data, isMarzneshin, t),
         username: data.username,
         online_at: data.online_at,
       }
@@ -115,9 +125,18 @@ function App() {
     >
       <div className="flex flex-col-reverse gap-4 justify-center">
         <div className="block md:flex justify-between flex-row-reverse mx-0 md:mx-6">
-          <div className="flex flex-row justify-between mx-5 md:mx-0 gap-3">
+          <div className="flex flex-row items-center justify-between mx-5 md:mx-0 gap-3">
             <LanguageSelector />
             <ModeToggle />
+            <QrCode
+              link={data?.subscription_url}
+              title={t("subQrcode")}
+              trigger={
+                <Button variant="outline" size="icon">
+                  <QrCodeIcon className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all" />
+                </Button>
+              }
+            />
           </div>
           <h1 className="scroll-m-20 text-3xl font-normal tracking-tight lg:text-4xl text-center py-5 grid-cols-5">
             {t("subStats")}
@@ -128,7 +147,7 @@ function App() {
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
           <SectionCards cardsData={cardsData} />
           <div className="grid grid-cols-1 md:grid-cols-2 md:gap-0 gap-4">
-            <Box subUrl={data?.subscription_url} />
+            <Box data={data} configs={configData || data?.links} />
             <Chart
               chartData={chartData?.usages}
               totalUsage={chartData?.total}
