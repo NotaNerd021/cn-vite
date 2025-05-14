@@ -11,6 +11,9 @@ importers:
       '@custom-react-hooks/use-clipboard':
         specifier: ^1.5.1
         version: 1.5.1(react@19.0.0)
+      '@custom-react-hooks/use-media-query':
+        specifier: ^1.5.1
+        version: 1.5.1(react@19.0.0)
       '@radix-ui/react-dialog':
         specifier: ^1.1.13
         version: 1.1.13(@types/react-dom@19.0.4(@types/react@19.0.12))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -230,6 +233,11 @@ packages:
 
   '@custom-react-hooks/use-clipboard@1.5.1':
     resolution: {integrity: sha512-rXwbVk8GtqZHTJsEWl1ubkE/uEiZR1OpvErdCpvctKVbwwAulhYwfvrU9CvoVywcqbVoj8j+gHYcYXNCyUh4Xw==}
+    peerDependencies:
+      react: '>=16'
+
+  '@custom-react-hooks/use-media-query@1.5.1':
+    resolution: {integrity: sha512-a9ON4m1XjlWlCSHmtZ4Horau/1DWURbHlk6dq7mNkaOM5vRyxp2EgklWrUqoX2Ywnqnr065YYDgqUUA0VYZDTw==}
     peerDependencies:
       react: '>=16'
 
@@ -2313,6 +2321,10 @@ snapshots:
       '@babel/helper-validator-identifier': 7.25.9
 
   '@custom-react-hooks/use-clipboard@1.5.1(react@19.0.0)':
+    dependencies:
+      react: 19.0.0
+
+  '@custom-react-hooks/use-media-query@1.5.1(react@19.0.0)':
     dependencies:
       react: 19.0.0
 
