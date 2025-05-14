@@ -36,5 +36,6 @@
   "androidContent": "Android users import config into this apps.",
   "windowsContent": "Windows users can download these apps.",
   "linkCopied": "Link Copied",
-  "subQrcode": "Subscription QrCode"
+  "subQrcode": "Subscription QrCode",
+  "copy": "Copy"
 }

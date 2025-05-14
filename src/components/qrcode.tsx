@@ -12,6 +12,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import QRCodeStyling from 'styled-qr-code';
+import { Button } from "./ui/button";
 
 interface QrCodeProps {
   link: string;
@@ -21,7 +22,7 @@ interface QrCodeProps {
 
 const QrCode = ({ link, title, trigger }: QrCodeProps) => {
   const theme = useTheme();
-  const isDarkMode = theme.theme === 'dark';
+  const isDarkMode = theme.theme === "dark";
   const { t } = useTranslation();
   const { copyToClipboard } = useClipboard();
 
@@ -30,7 +31,7 @@ const QrCode = ({ link, title, trigger }: QrCodeProps) => {
 
   const handleCopyToClipboard = async (config: string) => {
     await copyToClipboard(config);
-    toast.success(t('linkCopied'));
+    toast.success(t("linkCopied"));
   };
 
   const qrCode = useMemo(
@@ -95,14 +96,19 @@ const QrCode = ({ link, title, trigger }: QrCodeProps) => {
         <DialogHeader>
           <DialogTitle className="text-center text-wrap">{title}</DialogTitle>
         </DialogHeader>
-        <div className="flex justify-center p-2">
-          <div
+        <div className="flex flex-col items-center p-2">
+          <div ref={ref} className={`py-3 ${isReady ? "" : "hidden"}`} />
+          <Button
             onClick={() => handleCopyToClipboard(link)}
-            ref={ref}
-            className={`cursor-pointer py-3 ${isReady ? "" : "hidden"}`}
-          />
-          {!isReady ||
-            (!link && <Skeleton className="h-[250px] w-[250px] rounded-xl" />)}
+            className={`mt-4 cursor-pointer px-4 py-2 ${
+              isReady ? "" : "hidden"
+            }`}
+          >
+            {t("copy")}
+          </Button>
+          {(!isReady || !link) && (
+            <Skeleton className="h-[250px] w-[250px] rounded-xl" />
+          )}
         </div>
       </DialogContent>
     </Dialog>
