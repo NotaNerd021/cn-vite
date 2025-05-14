@@ -125,7 +125,7 @@ function App() {
     >
       <div className="flex flex-col-reverse gap-4 justify-center">
         <div className="block md:flex justify-between flex-row-reverse mx-0 md:mx-6">
-          <div className="flex flex-row items-center justify-between mx-5 md:mx-0 gap-3">
+          <div className="flex flex-row items-center justify-center mx-5 md:mx-0 gap-3">
             <LanguageSelector />
             <ModeToggle />
             <QrCode
