@@ -29,13 +29,15 @@ export function SectionCards({ cardsData }: SectionCardsProps) {
     cardsData;
 
   const remainingTrafficBytes = data_limit - totalTraffic;
-  const remainedTraffic =
-    remainingTrafficBytes < 0
-      ? t("limited")
-      : remainingTrafficBytes > 0
-      ? formatTraffic(remainingTrafficBytes, t)
-      : t("infinity");
+  let remainedTraffic: string;
 
+  if (remainingTrafficBytes < 0) {
+    remainedTraffic = t("limited");
+  } else if (remainingTrafficBytes > 0) {
+    remainedTraffic = formatTraffic(remainingTrafficBytes, t);
+  } else {
+    remainedTraffic = t("infinity");
+  }
   return (
     <div
       dir={isRTL ? "rtl" : "ltr"}

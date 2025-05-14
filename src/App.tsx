@@ -46,7 +46,7 @@ function App() {
 
   const { data: configData } = useSWR(
     isMarzneshin
-      ? `${import.meta.env?.VITE_PANEL_DOMAIN || window.location.origin}${
+      ? `${import.meta.env?.VITE_PANEL_DOMAIN ?? window.location.origin}${
           window.location.pathname
         }`
       : null,
@@ -55,7 +55,7 @@ function App() {
 
   const { data: chartData, error: chartError } = useSWR(
     isMarzneshin
-      ? `${import.meta.env?.VITE_PANEL_DOMAIN || window.location.origin}${
+      ? `${import.meta.env?.VITE_PANEL_DOMAIN ?? window.location.origin}${
           window.location.pathname
         }/usage?start=${startTime.toISOString()}&end=${endTime.toISOString()}`
       : null,
@@ -145,7 +145,7 @@ function App() {
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
           <SectionCards cardsData={cardsData} />
           <div className="grid grid-cols-1 md:grid-cols-2 md:gap-0 gap-4">
-            <Box data={data} configs={configData || data?.links} />
+            <Box data={data} configs={configData ?? data?.links} />
             <Chart
               chartData={chartData?.usages}
               totalUsage={chartData?.total}

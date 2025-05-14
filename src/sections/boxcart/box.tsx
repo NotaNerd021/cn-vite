@@ -5,10 +5,10 @@ import AppsTab from "@/sections/boxcart/apps";
 import ConfigsTab from "@/sections/boxcart/configs";
 
 interface BoxProps {
-  data: {
-    subscription_url: string;
+  readonly data: {
+    readonly subscription_url: string;
   };
-  configs: [];
+  readonly configs: [];
 }
 
 export function Box({ data, configs }: BoxProps) {

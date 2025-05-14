@@ -79,7 +79,7 @@ export function getStatus(
 
 export function extractNameFromConfigURL(url: string) {
   const namePattern = /#([^#]*)/;
-  const match = url.match(namePattern);
+  const match = namePattern.exec(url);
 
   if (match) {
     try {
@@ -96,7 +96,7 @@ export function extractNameFromConfigURL(url: string) {
     try {
       const decodedString = atob(encodedString);
       const parsedData = JSON.parse(decodedString);
-      return parsedData.ps || "Unnamed Config";
+      return parsedData.ps ?? "Unnamed Config";
     } catch (error) {
       console.error("Invalid vmess URL format:", error);
       return "Invalid Config";
