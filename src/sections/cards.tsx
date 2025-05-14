@@ -56,7 +56,13 @@ export function SectionCards({ cardsData }: SectionCardsProps) {
   );
 }
 
-function InfoCard({ label, value }: { label: string; value: string }) {
+function InfoCard({
+  label,
+  value,
+}: {
+  readonly label: string;
+  readonly value: string;
+}) {
   return (
     <Card className="@container/card">
       <CardHeader className="relative">
