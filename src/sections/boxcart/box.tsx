@@ -5,10 +5,13 @@ import AppsTab from "@/sections/boxcart/apps";
 import ConfigsTab from "@/sections/boxcart/configs";
 
 interface BoxProps {
-  subUrl: string;
+  data: {
+    subscription_url: string;
+  };
+  configs: [];
 }
 
-export function Box({ subUrl }: BoxProps) {
+export function Box({ data, configs }: BoxProps) {
   const { t } = useTranslation();
   return (
     <Card className="mx-4 md:mx-3 md:ms-5">
@@ -20,9 +23,9 @@ export function Box({ subUrl }: BoxProps) {
           </TabsList>
         </CardHeader>
         <CardContent className="px-2 sm:p-6">
-          <AppsTab url={subUrl} />
+          <AppsTab url={data?.subscription_url} />
 
-          <ConfigsTab />
+          <ConfigsTab data={configs} />
         </CardContent>
       </Tabs>
     </Card>
