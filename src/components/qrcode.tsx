@@ -39,25 +39,27 @@ const QrCode = ({ link, title, trigger }: QrCodeProps) => {
         width: 250,
         height: 250,
         dotsOptions: {
-          color: isDarkMode ? 'var(--color-neutral-300)' : 'var(--color-neutral-800)',
-          type: 'dots',
+          color: isDarkMode
+            ? "var(--color-neutral-300)"
+            : "var(--color-neutral-800)",
+          type: "dots",
         },
         cornersSquareOptions: {
-          color: isDarkMode ? 'var(--color-neutral-600)' : 'var(--color-neutral-600)',
-          type: 'extra-rounded',
+          color: "var(--color-neutral-600)",
+          type: "extra-rounded",
         },
         cornersDotOptions: {
-          color: isDarkMode ? 'var(--color-red-400)' : 'var(--color-red-400)',
-          type: 'dot',
+          color: "var(--color-red-400)",
+          type: "dot",
         },
         qrOptions: {
-          errorCorrectionLevel: 'L',
+          errorCorrectionLevel: "L",
           typeNumber: 15,
         },
         backgroundOptions: {
-          color: 'transparent',
+          color: "transparent",
         },
-        type: 'svg',
+        type: "svg",
       }),
     [isDarkMode]
   );
@@ -68,9 +70,9 @@ const QrCode = ({ link, title, trigger }: QrCodeProps) => {
     if (isOpen) {
       const timeout = setTimeout(() => {
         if (ref.current) {
-          ref.current.innerHTML = '';
+          ref.current.innerHTML = "";
           qrCode.append(ref.current);
-          qrCode.update({ data: link || '' });
+          qrCode.update({ data: link || "" });
           setIsReady(true);
         }
       }, 0);
@@ -89,7 +91,7 @@ const QrCode = ({ link, title, trigger }: QrCodeProps) => {
       }}
     >
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle className="text-center text-wrap">{title}</DialogTitle>
         </DialogHeader>
@@ -97,9 +99,10 @@ const QrCode = ({ link, title, trigger }: QrCodeProps) => {
           <div
             onClick={() => handleCopyToClipboard(link)}
             ref={ref}
-            className={`cursor-pointer py-3 ${isReady ? '' : 'hidden'}`}
+            className={`cursor-pointer py-3 ${isReady ? "" : "hidden"}`}
           />
-          {!isReady || (!link && <Skeleton className="h-[250px] w-[250px] rounded-xl" />)}
+          {!isReady ||
+            (!link && <Skeleton className="h-[250px] w-[250px] rounded-xl" />)}
         </div>
       </DialogContent>
     </Dialog>

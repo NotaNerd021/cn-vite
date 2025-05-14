@@ -62,8 +62,6 @@ function App() {
     fetcher
   );
 
-  console.log(data);
-
   const cardsData: CardsData = data
     ? {
         totalTraffic: data.used_traffic,
