@@ -18,11 +18,42 @@ import {
 import { useTranslation } from "react-i18next";
 import { SelectDateView } from "@/sections/chart/time-picker";
 
+type MarzneshinFormat = [string, number][];
+type MarzbanFormat = {
+  period: string;
+  start: string;
+  end: string;
+  stats: { total_traffic: number; period_start: string }[];
+};
 interface ChartProps {
-  chartData: [timestamp: string, usage: number][];
+  chartData: [string, number][] | MarzbanFormat;
   totalUsage: number;
   activeChart: string;
   setActiveChart: (chart: string) => void;
+}
+
+function normalizeChartData(
+  data: MarzneshinFormat | MarzbanFormat
+): [string, number][] {
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  return data?.stats?.map(({ total_traffic, period_start }) => [
+    String(Math.floor(new Date(period_start).getTime() / 1000)),
+    total_traffic,
+  ]);
+}
+
+function getTotalUsage(
+  data: { total_traffic: number; period_start: string }[]
+): number {
+  if (!Array.isArray(data) || data.length === 0) return 0;
+
+  return (data as { total_traffic: number; period_start: string }[]).reduce(
+    (sum, item) => sum + item.total_traffic,
+    0
+  );
 }
 
 export function Chart({
@@ -43,19 +74,15 @@ export function Chart({
     },
   } satisfies ChartConfig;
 
-  const transformedData = chartData
+  const normalizedData = normalizeChartData(chartData);
+
+  const transformedData = normalizedData
     ?.map(([timestamp, usage]: [string, number]) => {
       const timestampNumber = Number(timestamp);
-
-      // Guard against invalid timestamps
       if (isNaN(timestampNumber)) return null;
 
       const date = new Date(timestampNumber * 1000);
-
-      // Format the date to "YYYY-MM-DD"
       const formattedDate = date.toLocaleDateString("en-CA");
-
-      // Format the time to "HH:mm:ss"
       const formattedTime = date.toLocaleTimeString("en-US", {
         hour: "2-digit",
         minute: "2-digit",
@@ -64,17 +91,16 @@ export function Chart({
       });
 
       return {
-        date: `${formattedDate} ${formattedTime}`, // Combine both date and time
+        date: `${formattedDate} ${formattedTime}`,
         usage,
       };
     })
-    .filter(Boolean); // Filter out null values
+    .filter(Boolean);
 
   const formatter = (value: number) => {
     const date = new Date(value);
     const options: Intl.DateTimeFormatOptions = {};
 
-    // Set common options based on activeChart
     switch (activeChart) {
       case "monthly":
         options.day = "numeric";
@@ -128,7 +154,12 @@ export function Chart({
               {t("totalUsage")}
             </span>
             <span className="text-lg font-bold leading-none sm:text-3xl">
-              {formatTraffic(totalUsage, t)}
+              {formatTraffic(
+                Array.isArray(chartData)
+                  ? totalUsage
+                  : getTotalUsage((chartData as MarzbanFormat)?.stats),
+                t
+              )}
             </span>
           </button>
         </div>

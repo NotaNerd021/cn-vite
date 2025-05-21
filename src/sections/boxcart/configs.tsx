@@ -9,7 +9,7 @@ import QrCode from "@/components/qrcode";
 import { extractNameFromConfigURL } from "@/lib/utils";
 
 interface ConfigsTabProps {
-  data: [];
+  data: string;
 }
 
 const ConfigsTab = ({ data }: ConfigsTabProps) => {
@@ -25,7 +25,7 @@ const ConfigsTab = ({ data }: ConfigsTabProps) => {
   return (
     <TabsContent value="configs">
       <ScrollArea className="h-[270px] overflow-y-auto">
-        {data.map((config, index) => (
+        {data?.split("\n")?.map((config, index) => (
           <div
             className="my-3 flex cursor-default flex-row justify-between rounded-2xl bg-neutral-100 px-3 py-2 hover:bg-neutral-100 dark:bg-neutral-800 hover:dark:bg-neutral-600"
             key={config + index}

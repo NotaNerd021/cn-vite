@@ -21,8 +21,18 @@ interface CardsData {
   online_at: string;
 }
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetcher = async (url: string) => {
+  const res = await fetch(url);
+  const contentType = res.headers.get("content-type");
 
+  if (!res.ok) throw new Error(`Fetch error: ${res.status}`);
+
+  if (contentType?.includes("application/json")) {
+    return res.json();
+  } else {
+    return res.text();
+  }
+};
 function App() {
   const {
     t,
@@ -32,6 +42,7 @@ function App() {
   const [activeChart, setActiveChart] = useState("daily");
   const [startTime, setStartTime] = useState(addDays(new Date(), -1));
   const [endTime, setEndTime] = useState(new Date());
+  const [period, setPeriod] = useState("hour");
 
   const { data, error } = useSWR(
     `${import.meta.env?.VITE_PANEL_DOMAIN || window.location.origin}${
@@ -45,20 +56,18 @@ function App() {
     3;
 
   const { data: configData } = useSWR(
-    isMarzneshin
-      ? `${import.meta.env?.VITE_PANEL_DOMAIN ?? window.location.origin}${
-          window.location.pathname
-        }`
-      : null,
+    `${import.meta.env?.VITE_PANEL_DOMAIN ?? window.location.origin}${
+      window.location.pathname
+    }/links`,
     fetcher
   );
 
   const { data: chartData, error: chartError } = useSWR(
-    isMarzneshin
-      ? `${import.meta.env?.VITE_PANEL_DOMAIN ?? window.location.origin}${
-          window.location.pathname
-        }/usage?start=${startTime.toISOString()}&end=${endTime.toISOString()}`
-      : null,
+    `${import.meta.env?.VITE_PANEL_DOMAIN ?? window.location.origin}${
+      window.location.pathname
+    }/usage?start=${startTime.toISOString()}&end=${endTime.toISOString()}${
+      !isMarzneshin ? `&period=${period}` : ""
+    }`,
     fetcher
   );
 
@@ -87,26 +96,32 @@ function App() {
       case "daily":
         setStartTime(addDays(new Date(), -1));
         setEndTime(new Date());
+        setPeriod("hour");
         break;
       case "weekly":
         setStartTime(addDays(new Date(), -7));
         setEndTime(new Date());
+        setPeriod("day");
         break;
       case "monthly":
         setStartTime(addDays(new Date(), -30));
         setEndTime(new Date());
+        setPeriod("day");
         break;
       case "six-month":
         setStartTime(addDays(new Date(), -180));
         setEndTime(new Date());
+        setPeriod("month");
         break;
       case "yearly":
         setStartTime(addDays(new Date(), -365));
         setEndTime(new Date());
+        setPeriod("month");
         break;
       default:
         setStartTime(addDays(new Date(), -1));
         setEndTime(new Date());
+        setPeriod("hour");
         break;
     }
   };
@@ -145,10 +160,10 @@ function App() {
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
           <SectionCards cardsData={cardsData} />
           <div className="grid grid-cols-1 md:grid-cols-2 md:gap-0 gap-4">
-            <Box data={data} configs={configData ?? data?.links} />
+            <Box data={data} configs={configData} />
             <Chart
-              chartData={chartData?.usages}
-              totalUsage={chartData?.total}
+              chartData={isMarzneshin ? chartData?.usages : chartData}
+              totalUsage={isMarzneshin && chartData?.total}
               activeChart={activeChart}
               setActiveChart={updateChart}
             />

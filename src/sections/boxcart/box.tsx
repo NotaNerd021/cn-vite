@@ -8,7 +8,7 @@ interface BoxProps {
   readonly data: {
     readonly subscription_url: string;
   };
-  readonly configs: [];
+  readonly configs: string;
 }
 
 export function Box({ data, configs }: BoxProps) {
