@@ -28,16 +28,18 @@ export function SectionCards({ cardsData }: SectionCardsProps) {
   const { data_limit, totalTraffic, expire_date, status, username, online_at } =
     cardsData;
 
-  const remainingTrafficBytes = data_limit - totalTraffic;
+  const remainingTrafficBytes =
+    data_limit !== null ? data_limit - totalTraffic : null;
   let remainedTraffic: string;
 
-  if (remainingTrafficBytes < 0) {
-    remainedTraffic = t("limited");
-  } else if (remainingTrafficBytes > 0) {
-    remainedTraffic = formatTraffic(remainingTrafficBytes, t);
-  } else {
+  if (remainingTrafficBytes === null) {
     remainedTraffic = t("infinity");
+  } else if (remainingTrafficBytes < 0) {
+    remainedTraffic = t("limited");
+  } else {
+    remainedTraffic = formatTraffic(remainingTrafficBytes, t);
   }
+
   return (
     <div
       dir={isRTL ? "rtl" : "ltr"}
