@@ -28,8 +28,7 @@ export function SectionCards({ cardsData }: SectionCardsProps) {
   const { data_limit, totalTraffic, expire_date, status, username, online_at } =
     cardsData;
 
-  const remainingTrafficBytes =
-    data_limit !== null ? data_limit - totalTraffic : null;
+  const remainingTrafficBytes = data_limit ? data_limit - totalTraffic : null;
   let remainedTraffic: string;
 
   if (remainingTrafficBytes === null) {
@@ -47,7 +46,10 @@ export function SectionCards({ cardsData }: SectionCardsProps) {
     >
       <InfoCard label={t("username")} value={t(username)} />
       <InfoCard label={t("status")} value={t(status)} />
-      <InfoCard label={t("online_at")} value={formatDate(naiveAsUTC(online_at))} />
+      <InfoCard
+        label={t("online_at")}
+        value={formatDate(naiveAsUTC(online_at))}
+      />
       <InfoCard label={t("data_limit")} value={formatTraffic(data_limit, t)} />
       <InfoCard label={t("remainingTraffic")} value={remainedTraffic} />
       <InfoCard
