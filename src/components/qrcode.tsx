@@ -11,16 +11,17 @@ import { useClipboard } from '@custom-react-hooks/use-clipboard';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import QRCodeStyling from 'styled-qr-code';
+import QRCodeStyling, { TypeNumber } from "styled-qr-code";
 import { Button } from "./ui/button";
 
 interface QrCodeProps {
   link: string;
   title: string;
   trigger: React.ReactNode;
+  typeNumber?: TypeNumber | undefined;
 }
 
-const QrCode = ({ link, title, trigger }: QrCodeProps) => {
+const QrCode = ({ link, title, trigger, typeNumber }: QrCodeProps) => {
   const theme = useTheme();
   const isDarkMode = theme.theme === "dark";
   const { t } = useTranslation();
@@ -55,14 +56,14 @@ const QrCode = ({ link, title, trigger }: QrCodeProps) => {
         },
         qrOptions: {
           errorCorrectionLevel: "L",
-          typeNumber: 15,
+          typeNumber: typeNumber ?? 15,
         },
         backgroundOptions: {
           color: "transparent",
         },
         type: "svg",
       }),
-    [isDarkMode]
+    [isDarkMode, typeNumber]
   );
 
   const ref = useRef<HTMLDivElement>(null);

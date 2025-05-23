@@ -142,7 +142,7 @@ function App() {
             <LanguageSelector />
             <ModeToggle />
             <QrCode
-              link={data?.subscription_url}
+              link={data?.subscription_url || window.location.href}
               title={t("subQrcode")}
               trigger={
                 <Button variant="outline" size="icon">

@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useClipboard } from "@custom-react-hooks/use-clipboard";
 import QrCode from "@/components/qrcode";
 import { extractNameFromConfigURL } from "@/lib/utils";
+import { TypeNumber } from "styled-qr-code";
 
 interface ConfigsTabProps {
   data: string;
@@ -48,6 +49,9 @@ const ConfigsTab = ({ data }: ConfigsTabProps) => {
                   <Button className="ms-2 cursor-pointer" size="icon">
                     <QrCodeIcon />
                   </Button>
+                }
+                typeNumber={
+                  (Math.ceil(config?.length / 100) + 11 || 15) as TypeNumber
                 }
               />
             </div>
