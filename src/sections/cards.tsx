@@ -4,7 +4,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { calculateRemainingTime, formatDate, formatTraffic } from "@/lib/utils";
+import {calculateRemainingTime, formatDate, formatTraffic, naiveAsUTC} from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
 interface SectionCardsProps {
@@ -47,7 +47,7 @@ export function SectionCards({ cardsData }: SectionCardsProps) {
     >
       <InfoCard label={t("username")} value={t(username)} />
       <InfoCard label={t("status")} value={t(status)} />
-      <InfoCard label={t("online_at")} value={formatDate(online_at)} />
+      <InfoCard label={t("online_at")} value={formatDate(naiveAsUTC(online_at))} />
       <InfoCard label={t("data_limit")} value={formatTraffic(data_limit, t)} />
       <InfoCard label={t("remainingTraffic")} value={remainedTraffic} />
       <InfoCard
