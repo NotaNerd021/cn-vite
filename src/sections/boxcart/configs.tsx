@@ -51,7 +51,10 @@ const ConfigsTab = ({ data }: ConfigsTabProps) => {
                   </Button>
                 }
                 typeNumber={
-                  (Math.ceil(config?.length / 100) + 11 || 15) as TypeNumber
+                  Math.max(
+                    15,
+                    Math.ceil(config?.length / 100 + 11)
+                  ) as TypeNumber
                 }
               />
             </div>
