@@ -45,5 +45,7 @@
   "windowsContent": "Windows 用户可以下载这些应用。",
   "linkCopied": "链接已复制",
   "subQrcode": "订阅二维码",
-  "copy": "复制"
+  "copy": "复制",
+  "expired": "已过期",
+  "limited": "有限"
 }

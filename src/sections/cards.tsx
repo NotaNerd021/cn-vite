@@ -14,7 +14,7 @@ interface SectionCardsProps {
     expire_date: string;
     status: string;
     username: string;
-    online_at: string;
+    online_at: string | null;
   };
 }
 
@@ -48,7 +48,7 @@ export function SectionCards({ cardsData }: SectionCardsProps) {
       <InfoCard label={t("status")} value={t(status)} />
       <InfoCard
         label={t("online_at")}
-        value={formatDate(naiveAsUTC(online_at))}
+        value={formatDate(naiveAsUTC(online_at) ?? "")}
       />
       <InfoCard label={t("data_limit")} value={formatTraffic(data_limit, t)} />
       <InfoCard label={t("remainingTraffic")} value={remainedTraffic} />

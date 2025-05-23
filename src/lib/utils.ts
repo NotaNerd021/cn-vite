@@ -134,6 +134,7 @@ export function formatDate(dateString: string): string {
   return format(date, "MM dd HH:mm");
 }
 
-export function naiveAsUTC(dateString: string): string {
-  return dateString + (dateString.endsWith("Z") ? "" : "Z")
+export function naiveAsUTC(dateString: string | null): string | null {
+  if (dateString) return dateString + (dateString?.endsWith("Z") ? "" : "Z");
+  else return null;
 }
