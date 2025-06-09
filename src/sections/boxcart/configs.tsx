@@ -8,6 +8,7 @@ import { useClipboard } from "@custom-react-hooks/use-clipboard";
 import QrCode from "@/components/qrcode";
 import { extractNameFromConfigURL } from "@/lib/utils";
 import { TypeNumber } from "styled-qr-code";
+import { useEffect, useState } from "react";
 
 interface ConfigsTabProps {
   data: string;
@@ -15,6 +16,7 @@ interface ConfigsTabProps {
 
 const ConfigsTab = ({ data }: ConfigsTabProps) => {
   const { t } = useTranslation();
+  const [dataLinks, setDataLinks] = useState<string[]>([]);
 
   const { copyToClipboard } = useClipboard();
 
@@ -23,10 +25,28 @@ const ConfigsTab = ({ data }: ConfigsTabProps) => {
     toast.success(t("linkCopied"));
   };
 
+  useEffect(() => {
+    if (data) {
+      const links = data?.trim();
+      const decodedLinks =
+        links.includes("vmess") || links.includes("vless")
+          ? links
+          : decodeBase64(links);
+      const configArray = decodedLinks ? decodedLinks.split("\n") : [];
+      setDataLinks(
+        configArray[configArray.length - 1] === "False"
+          ? configArray.slice(0, -1)
+          : configArray
+      );
+    } else {
+      setDataLinks([]);
+    }
+  }, [data]);
+
   return (
     <TabsContent value="configs">
       <ScrollArea className="h-[270px] overflow-y-auto">
-        {data?.split("\n")?.map((config, index) => (
+        {dataLinks?.map((config, index) => (
           <div
             className="my-3 flex cursor-default flex-row justify-between rounded-2xl bg-neutral-100 px-3 py-2 hover:bg-neutral-100 dark:bg-neutral-800 hover:dark:bg-neutral-600"
             key={config + index}
@@ -66,3 +86,13 @@ const ConfigsTab = ({ data }: ConfigsTabProps) => {
 };
 
 export default ConfigsTab;
+
+function decodeBase64(encodedString: string) {
+  try {
+    const decodedString = atob(encodedString);
+    return decodedString;
+  } catch (error) {
+    console.error("Failed to decode base64:", error);
+    return "";
+  }
+}
