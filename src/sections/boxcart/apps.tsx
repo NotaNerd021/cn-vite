@@ -26,6 +26,7 @@ import { githubService, AppReleaseInfo } from "@/services/github";
 
 interface AppsTabProps {
   url: string;
+  username?: string;
 }
 
 interface App {
@@ -53,7 +54,7 @@ const appIcons = {
     "https://raw.githubusercontent.com/MatinDehghanian/public-assets/refs/heads/main/icons/singbox.png",
 };
 
-const AppsTab = ({ url }: AppsTabProps) => {
+const AppsTab = ({ url, username }: AppsTabProps) => {
   const {
     t,
     i18n: { language },
@@ -80,7 +81,10 @@ const AppsTab = ({ url }: AppsTabProps) => {
         const allReleases = await githubService.getAllAppReleases();
         setReleases(allReleases);
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch app releases';
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Failed to fetch app releases";
         console.warn("Failed to fetch app releases:", error);
         setError(errorMessage);
         // Set fallback releases with empty download URLs
@@ -113,7 +117,7 @@ const AppsTab = ({ url }: AppsTabProps) => {
               className="mx-auto h-12 w-12 rounded-lg object-cover"
             />
           ),
-          format: "streisand://import/{url}",
+          format: `streisand://import/{url}#MattSub-${username}`,
           download: "https://apps.apple.com/us/app/streisand/id6450534064",
         },
         {
@@ -125,9 +129,21 @@ const AppsTab = ({ url }: AppsTabProps) => {
               className="mx-auto h-12 w-12 rounded-lg object-cover"
             />
           ),
-          format: "v2box://install-sub?url={url}&name=MattDev",
+          format: `v2box://install-sub?url={url}&name=Mattsub-${username}`,
           download:
             "https://apps.apple.com/us/app/v2box-v2ray-client/id6446814690",
+        },
+        {
+          name: "SingBox",
+          icon: (
+            <img
+              src={appIcons.SingBox}
+              alt="SingBox"
+              className="mx-auto h-12 w-12 rounded-lg object-cover"
+            />
+          ),
+          format: `sing-box://import-remote-profile?url={url}#MattSub-${username}`,
+          download: "https://apps.apple.com/us/app/sing-box-vt/id6673731168",
         },
         {
           name: "Shadowrocket",
@@ -158,7 +174,7 @@ const AppsTab = ({ url }: AppsTabProps) => {
               className="mx-auto h-12 w-12 rounded-lg object-cover"
             />
           ),
-          format: "v2rayng://install-config?url={url}",
+          format: `v2rayng://install-config?url={url}#MattSub-${username}`,
           download:
             (releases.v2rayNG && typeof releases.v2rayNG === "object"
               ? releases.v2rayNG.downloadUrl
@@ -173,9 +189,22 @@ const AppsTab = ({ url }: AppsTabProps) => {
               className="mx-auto h-12 w-12 rounded-lg object-cover"
             />
           ),
-          format: "v2box://install-sub?url={url}&name=MattDev",
+          format: `v2box://install-sub?url={url}&name=MattSub-${username}`,
           download:
             "https://play.google.com/store/apps/details?id=dev.hexasoftware.v2box",
+        },
+        {
+          name: "SingBox",
+          icon: (
+            <img
+              src={appIcons.SingBox}
+              alt="SingBox"
+              className="mx-auto h-12 w-12 rounded-lg object-cover"
+            />
+          ),
+          format: `sing-box://import-remote-profile?url={url}#MattSub-${username}`,
+          download:
+            "https://play.google.com/store/apps/details?id=io.nekohasekai.sfa&hl=en",
         },
       ],
     },
@@ -254,7 +283,10 @@ const AppsTab = ({ url }: AppsTabProps) => {
       <div className="w-full">
         <div className="flex justify-center gap-2 mb-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-10 w-24 bg-gray-200 rounded animate-pulse" />
+            <div
+              key={i}
+              className="h-10 w-24 bg-gray-200 rounded animate-pulse"
+            />
           ))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -275,10 +307,7 @@ const AppsTab = ({ url }: AppsTabProps) => {
           {t("failedToLoad") || "Failed to load app data"}
         </h3>
         <p className="text-gray-600 mb-4">{error}</p>
-        <Button 
-          onClick={() => window.location.reload()} 
-          variant="outline"
-        >
+        <Button onClick={() => window.location.reload()} variant="outline">
           {t("retry") || "Retry"}
         </Button>
       </div>
@@ -361,17 +390,22 @@ const AppsTab = ({ url }: AppsTabProps) => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {tab?.apps?.map((app) => {
                       // Check if download URL is missing for GitHub-dependent apps
-                      const isGitHubApp = ['V2rayNG', 'V2rayN', 'Flclash'].includes(app.name);
-                      const hasDownloadUrl = app.download && app.download.trim() !== '';
+                      const isGitHubApp = [
+                        "V2rayNG",
+                        "V2rayN",
+                        "Flclash",
+                      ].includes(app.name);
+                      const hasDownloadUrl =
+                        app.download && app.download.trim() !== "";
                       const showUnavailable = isGitHubApp && !hasDownloadUrl;
-                      
+
                       return (
                         <Card
                           key={app.name}
                           className={`transition-colors duration-200 ${
-                            showUnavailable 
-                              ? 'opacity-50 cursor-not-allowed' 
-                              : 'hover:bg-neutral-100 hover:dark:bg-neutral-600 cursor-pointer'
+                            showUnavailable
+                              ? "opacity-50 cursor-not-allowed"
+                              : "hover:bg-neutral-100 hover:dark:bg-neutral-600 cursor-pointer"
                           }`}
                           role="button"
                           onClick={() => !showUnavailable && handleOnClick(app)}
