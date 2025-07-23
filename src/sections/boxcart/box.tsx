@@ -13,6 +13,25 @@ interface BoxProps {
 
 export function Box({ data, configs }: BoxProps) {
   const { t } = useTranslation();
+
+  // Check if configs tab should be shown based on environment variable
+  const showConfigsTab = import.meta.env.VITE_SHOW_CONFIGS_TAB === "true";
+
+  // If configs tab is disabled, show only apps without tabs
+  if (!showConfigsTab) {
+    return (
+      <Card className="mx-4 md:mx-3 md:ms-5">
+        <CardHeader>
+          <h3 className="text-lg font-semibold">{t("apps")}</h3>
+        </CardHeader>
+        <CardContent className="px-2 sm:p-6">
+          <AppsTab url={data?.subscription_url} />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Default mode with both tabs
   return (
     <Card className="mx-4 md:mx-3 md:ms-5">
       <Tabs defaultValue="apps">
@@ -24,7 +43,6 @@ export function Box({ data, configs }: BoxProps) {
         </CardHeader>
         <CardContent className="px-2 sm:p-6">
           <AppsTab url={data?.subscription_url} />
-
           <ConfigsTab data={configs} />
         </CardContent>
       </Tabs>

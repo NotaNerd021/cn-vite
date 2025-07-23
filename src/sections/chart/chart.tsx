@@ -23,7 +23,7 @@ type MarzbanFormat = {
   period: string;
   start: string;
   end: string;
-  stats: { total_traffic: number; period_start: string }[];
+  stats: { [key: string]: { total_traffic: number; period_start: string }[] };
 };
 interface ChartProps {
   chartData: [string, number][] | MarzbanFormat;
@@ -39,21 +39,38 @@ function normalizeChartData(
     return data;
   }
 
-  return data?.stats?.map(({ total_traffic, period_start }) => [
+  // Get the first (and typically only) key from stats object
+  const statsKey = Object.keys(data?.stats || {})[0];
+  const statsArray = data?.stats?.[statsKey];
+
+  if (!statsArray || !Array.isArray(statsArray)) {
+    return [];
+  }
+
+  return statsArray.map(({ total_traffic, period_start }) => [
     String(Math.floor(new Date(period_start).getTime() / 1000)),
     total_traffic,
   ]);
 }
 
 function getTotalUsage(
-  data: { total_traffic: number; period_start: string }[]
+  data:
+    | { [key: string]: { total_traffic: number; period_start: string }[] }
+    | { total_traffic: number; period_start: string }[]
 ): number {
-  if (!Array.isArray(data) || data.length === 0) return 0;
+  let statsArray: { total_traffic: number; period_start: string }[];
 
-  return (data as { total_traffic: number; period_start: string }[]).reduce(
-    (sum, item) => sum + item.total_traffic,
-    0
-  );
+  if (Array.isArray(data)) {
+    statsArray = data;
+  } else {
+    // Get the first (and typically only) key from stats object
+    const statsKey = Object.keys(data || {})[0];
+    statsArray = data?.[statsKey] || [];
+  }
+
+  if (!Array.isArray(statsArray) || statsArray.length === 0) return 0;
+
+  return statsArray.reduce((sum, item) => sum + item.total_traffic, 0);
 }
 
 export function Chart({

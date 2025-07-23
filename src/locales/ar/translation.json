@@ -47,5 +47,16 @@
   "subQrcode": "رمز الاستجابة السريعة للاشتراك",
   "copy": "نسخ",
   "expired": "منتهي الصلاحية",
-  "limited": "محدود"
+  "limited": "محدود",
+  "appDialog": {
+    "description": "اختر إجراءً للمتابعة مع هذا التطبيق",
+    "hint": "تأكد من تثبيت التطبيق قبل استيراد التكوين",
+    "import": "استيراد التكوين",
+    "download": "تحميل التطبيق"
+  },
+  "configuration": "التكوين",
+  "configurationDescription": "اختر إجراءً للمتابعة مع هذا التطبيق",
+  "configurationURL": "رابط التكوين",
+  "downloadApp": "تحميل التطبيق",
+  "importConfig": "استيراد التكوين"
 }

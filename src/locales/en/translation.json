@@ -39,5 +39,16 @@
   "subQrcode": "Subscription QrCode",
   "copy": "Copy",
   "expired": "Expired",
-  "limited": "Limited"
+  "limited": "Limited",
+  "appDialog": {
+    "description": "Choose an action to proceed with this app",
+    "hint": "Make sure you have the app installed before importing the configuration",
+    "import": "Import Config",
+    "download": "Download App"
+  },
+  "configuration": "Configuration",
+  "configurationDescription": "Choose an action to proceed with this app",
+  "configurationURL": "Configuration URL",
+  "downloadApp": "Download App",
+  "importConfig": "Import Config"
 }

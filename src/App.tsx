@@ -11,6 +11,7 @@ import QrCode from "./components/qrcode";
 import { Button } from "./components/ui/button";
 import { QrCodeIcon } from "lucide-react";
 import { getStatus } from "./lib/utils";
+import { Helmet } from "react-helmet";
 
 interface CardsData {
   totalTraffic: number;
@@ -136,6 +137,13 @@ function App() {
       dir={isRTL ? "rtl" : "ltr"}
       className="@container/main flex flex-1 flex-col gap-2 p-5"
     >
+      <Helmet>
+        <title>{data?.username} Sub Stats</title>
+        <meta
+          name="description"
+          content="Powered by https://github.com/MatinDehghanian"
+        />
+      </Helmet>
       <div className="flex flex-col-reverse gap-4 justify-center">
         <div className="block md:flex justify-between flex-row-reverse mx-0 md:mx-6">
           <div className="flex flex-row items-center justify-center mx-5 md:mx-0 gap-3">

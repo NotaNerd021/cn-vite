@@ -47,5 +47,16 @@
   "subQrcode": "订阅二维码",
   "copy": "复制",
   "expired": "已过期",
-  "limited": "有限"
+  "limited": "有限",
+  "appDialog": {
+    "description": "选择一个操作以继续使用此应用",
+    "hint": "在导入配置之前，请确保您已安装该应用",
+    "import": "导入配置",
+    "download": "下载应用"
+  },
+  "configuration": "配置",
+  "configurationDescription": "选择一个操作以继续使用此应用",
+  "configurationURL": "配置URL",
+  "downloadApp": "下载应用",
+  "importConfig": "导入配置"
 }
