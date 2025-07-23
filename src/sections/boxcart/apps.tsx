@@ -48,7 +48,7 @@ const appIcons = {
   V2box:
     "https://raw.githubusercontent.com/MatinDehghanian/public-assets/refs/heads/main/icons/v2box.png",
   Flclash:
-    "https://raw.githubusercontent.com/MatinDehghanian/public-assets/refs/heads/main/icons/flclash.png",
+    "https://raw.githubusercontent.com/MatinDehghanian/public-assets/refs/heads/main/icons/flclash.jpg",
   SingBox:
     "https://raw.githubusercontent.com/MatinDehghanian/public-assets/refs/heads/main/icons/singbox.png",
 };
