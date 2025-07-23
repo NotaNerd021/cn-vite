@@ -410,11 +410,21 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
                           role="button"
                           onClick={() => !showUnavailable && handleOnClick(app)}
                         >
-                          <CardHeader className="text-center">
-                            <CardTitle className="flex items-center justify-center gap-2">
-                              {app.name}
+                          <CardHeader className="text-center px-1 py-3">
+                            <CardTitle className="flex flex-col items-center justify-center gap-1 overflow-hidden">
+                              <span
+                                className={`text-center break-words hyphens-auto leading-tight w-full overflow-wrap-anywhere ${
+                                  app.name.length > 12
+                                    ? "text-xs"
+                                    : app.name.length > 8
+                                    ? "text-sm"
+                                    : "text-base"
+                                }`}
+                              >
+                                {app.name}
+                              </span>
                               {showUnavailable && (
-                                <span className="text-xs text-red-500">
+                                <span className="text-xs text-red-500 text-center">
                                   ({t("unavailable") || "Unavailable"})
                                 </span>
                               )}

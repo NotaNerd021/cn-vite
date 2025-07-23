@@ -294,7 +294,7 @@ function App() {
             <SectionCards cardsData={cardsData} />
             <div className="grid grid-cols-1 md:grid-cols-2 md:gap-0 gap-4">
               <Box
-                data={data}
+                username={data?.username}
                 SubURL={getAdjustedUrl(data?.subscription_url)}
                 configs={configData}
               />

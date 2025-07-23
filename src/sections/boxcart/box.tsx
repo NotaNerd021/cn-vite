@@ -5,14 +5,12 @@ import AppsTab from "@/sections/boxcart/apps";
 import ConfigsTab from "@/sections/boxcart/configs";
 
 interface BoxProps {
-  readonly data: {
-    readonly username?: string;
-  };
+  readonly username?: string;
   readonly SubURL?: string;
   readonly configs: string;
 }
 
-export function Box({ data, configs, SubURL }: BoxProps) {
+export function Box({ username, configs, SubURL }: BoxProps) {
   const { t } = useTranslation();
 
   // Check if configs tab should be shown based on environment variable
@@ -26,7 +24,7 @@ export function Box({ data, configs, SubURL }: BoxProps) {
           <h3 className="text-lg font-semibold">{t("apps")}</h3>
         </CardHeader>
         <CardContent className="px-2 sm:p-6">
-          <AppsTab url={SubURL ?? ""} />
+          <AppsTab url={SubURL ?? ""} username={username} />
         </CardContent>
       </Card>
     );
@@ -43,7 +41,7 @@ export function Box({ data, configs, SubURL }: BoxProps) {
           </TabsList>
         </CardHeader>
         <CardContent className="px-2 sm:p-6">
-          <AppsTab url={SubURL ?? ""} username={data?.username} />
+          <AppsTab url={SubURL ?? ""} username={username} />
           <ConfigsTab data={configs} />
         </CardContent>
       </Tabs>
