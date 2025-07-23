@@ -248,6 +248,43 @@ const AppsTab = ({ url }: AppsTabProps) => {
   // Check if configs tab should be shown based on environment variable
   const showConfigsTab = import.meta.env.VITE_SHOW_CONFIGS_TAB === "true";
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="w-full">
+        <div className="flex justify-center gap-2 mb-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="h-10 w-24 bg-gray-200 rounded animate-pulse" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="h-32 bg-gray-200 rounded animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <div className="text-red-500 text-4xl mb-4">⚠️</div>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+          {t("failedToLoad") || "Failed to load app data"}
+        </h3>
+        <p className="text-gray-600 mb-4">{error}</p>
+        <Button 
+          onClick={() => window.location.reload()} 
+          variant="outline"
+        >
+          {t("retry") || "Retry"}
+        </Button>
+      </div>
+    );
+  }
+
   // Content to render
   const appsContent = (
     <>
@@ -322,21 +359,39 @@ const AppsTab = ({ url }: AppsTabProps) => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {tab?.apps?.map((app) => (
-                      <Card
-                        key={app.name}
-                        className="hover:bg-neutral-100 hover:dark:bg-neutral-600 cursor-pointer transition-colors duration-200"
-                        role="button"
-                        onClick={() => handleOnClick(app)}
-                      >
-                        <CardHeader className="text-center">
-                          <CardTitle>{app.name}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex justify-center">
-                          {app.icon}
-                        </CardContent>
-                      </Card>
-                    ))}
+                    {tab?.apps?.map((app) => {
+                      // Check if download URL is missing for GitHub-dependent apps
+                      const isGitHubApp = ['V2rayNG', 'V2rayN', 'Flclash'].includes(app.name);
+                      const hasDownloadUrl = app.download && app.download.trim() !== '';
+                      const showUnavailable = isGitHubApp && !hasDownloadUrl;
+                      
+                      return (
+                        <Card
+                          key={app.name}
+                          className={`transition-colors duration-200 ${
+                            showUnavailable 
+                              ? 'opacity-50 cursor-not-allowed' 
+                              : 'hover:bg-neutral-100 hover:dark:bg-neutral-600 cursor-pointer'
+                          }`}
+                          role="button"
+                          onClick={() => !showUnavailable && handleOnClick(app)}
+                        >
+                          <CardHeader className="text-center">
+                            <CardTitle className="flex items-center justify-center gap-2">
+                              {app.name}
+                              {showUnavailable && (
+                                <span className="text-xs text-red-500">
+                                  ({t("unavailable") || "Unavailable"})
+                                </span>
+                              )}
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="flex justify-center">
+                            {app.icon}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>

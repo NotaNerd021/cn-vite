@@ -57,5 +57,6 @@
   "loading": "Loading...",
   "networkError": "Network Error",
   "timeout": "Request timeout",
-  "failedToLoad": "Failed to load data"
+  "failedToLoad": "Failed to load data",
+  "unavailable": "Unavailable"
 }
