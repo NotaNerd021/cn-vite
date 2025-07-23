@@ -69,14 +69,28 @@ const AppsTab = ({ url }: AppsTabProps) => {
     v2rayN: null,
     flclash: null,
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchReleases = async () => {
       try {
+        setLoading(true);
+        setError(null);
         const allReleases = await githubService.getAllAppReleases();
         setReleases(allReleases);
       } catch (error) {
-        console.error("Failed to fetch app releases:", error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to fetch app releases';
+        console.warn("Failed to fetch app releases:", error);
+        setError(errorMessage);
+        // Set fallback releases with empty download URLs
+        setReleases({
+          v2rayNG: null,
+          v2rayN: null,
+          flclash: null,
+        });
+      } finally {
+        setLoading(false);
       }
     };
 

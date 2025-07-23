@@ -50,5 +50,12 @@
   "configurationDescription": "Choose an action to proceed with this app",
   "configurationURL": "Configuration URL",
   "downloadApp": "Download App",
-  "importConfig": "Import Config"
+  "importConfig": "Import Config",
+  "connectionError": "Connection Error",
+  "serverDown": "Server might be temporarily unavailable. Please check your internet connection.",
+  "retry": "Retry",
+  "loading": "Loading...",
+  "networkError": "Network Error",
+  "timeout": "Request timeout",
+  "failedToLoad": "Failed to load data"
 }

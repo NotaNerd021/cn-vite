@@ -3,7 +3,7 @@ import { SectionCards } from "@/sections/cards";
 import LanguageSelector from "@/sections/nav/lang";
 import { useTranslation } from "react-i18next";
 import { ModeToggle } from "@/sections/nav/theme-toggle";
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { addDays } from "date-fns";
 import useSWR from "swr";
 import { Box } from "@/sections/boxcart/box";
@@ -12,6 +12,7 @@ import { Button } from "./components/ui/button";
 import { QrCodeIcon } from "lucide-react";
 import { getStatus } from "./lib/utils";
 import { Helmet } from "react-helmet";
+import { NetworkMonitor } from "@/lib/performance";
 
 interface CardsData {
   totalTraffic: number;
@@ -23,15 +24,39 @@ interface CardsData {
 }
 
 const fetcher = async (url: string) => {
-  const res = await fetch(url);
-  const contentType = res.headers.get("content-type");
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+  
+  try {
+    const res = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Accept': 'application/json, text/plain, */*'
+      }
+    });
+    
+    clearTimeout(timeoutId);
+    
+    const contentType = res.headers.get("content-type");
 
-  if (!res.ok) throw new Error(`Fetch error: ${res.status}`);
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
 
-  if (contentType?.includes("application/json")) {
-    return res.json();
-  } else {
-    return res.text();
+    if (contentType?.includes("application/json")) {
+      return res.json();
+    } else {
+      return res.text();
+    }
+  } catch (error) {
+    clearTimeout(timeoutId);
+    
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error('Request timeout - please check your connection');
+    }
+    
+    throw error;
   }
 };
 function App() {
@@ -45,11 +70,26 @@ function App() {
   const [endTime, setEndTime] = useState(new Date());
   const [period, setPeriod] = useState("hour");
 
-  const { data, error } = useSWR(
+  // Initialize network monitor
+  useEffect(() => {
+    NetworkMonitor.init();
+  }, []);
+
+  const { data, error, isLoading } = useSWR(
     `${import.meta.env?.VITE_PANEL_DOMAIN || window.location.origin}${
       window.location.pathname
     }/info`,
-    fetcher
+    fetcher,
+    {
+      errorRetryCount: 3,
+      errorRetryInterval: 2000,
+      revalidateOnFocus: false,
+      refreshInterval: 30000, // Refresh every 30 seconds
+      dedupingInterval: 10000, // Dedupe requests within 10 seconds
+      onError: (error) => {
+        console.warn('Failed to fetch user info:', error);
+      }
+    }
   );
 
   const isMarzneshin =
@@ -60,7 +100,16 @@ function App() {
     `${import.meta.env?.VITE_PANEL_DOMAIN ?? window.location.origin}${
       window.location.pathname
     }/links`,
-    fetcher
+    fetcher,
+    {
+      errorRetryCount: 2,
+      errorRetryInterval: 3000,
+      revalidateOnFocus: false,
+      dedupingInterval: 30000, // Cache config data for 30 seconds
+      onError: (error) => {
+        console.warn('Failed to fetch config data:', error);
+      }
+    }
   );
 
   const { data: chartData, error: chartError } = useSWR(
@@ -69,7 +118,17 @@ function App() {
     }/usage?start=${startTime.toISOString()}&end=${endTime.toISOString()}${
       !isMarzneshin ? `&period=${period}` : ""
     }`,
-    fetcher
+    fetcher,
+    {
+      errorRetryCount: 2,
+      errorRetryInterval: 2000,
+      revalidateOnFocus: false,
+      refreshInterval: 60000, // Refresh chart data every minute
+      dedupingInterval: 5000,
+      onError: (error) => {
+        console.warn('Failed to fetch chart data:', error);
+      }
+    }
   );
 
   const cardsData: CardsData = data
@@ -129,8 +188,47 @@ function App() {
 
   const isRTL = language === "fa" || language === "ar";
 
-  if (error || chartError) return <div>Error loading data...</div>;
-  if (!data) return <div>Loading...</div>;
+  // Enhanced error handling with better user feedback
+  if (error || chartError) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <div className="text-center space-y-4">
+          <h2 className="text-xl font-semibold text-red-600">
+            {t("connectionError") || "Connection Error"}
+          </h2>
+          <p className="text-gray-600">
+            {error?.message || chartError?.message || t("serverDown") || "Server might be temporarily unavailable"}
+          </p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            variant="outline"
+            className="mt-4"
+          >
+            {t("retry") || "Retry"}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading state with skeleton
+  if (isLoading || !data) {
+    return (
+      <div className="@container/main flex flex-1 flex-col gap-2 p-5">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-24 bg-gray-200 rounded-lg animate-pulse" />
+            ))}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="h-96 bg-gray-200 rounded-lg animate-pulse" />
+            <div className="h-96 bg-gray-200 rounded-lg animate-pulse" />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

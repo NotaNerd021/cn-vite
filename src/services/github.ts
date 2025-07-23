@@ -23,24 +23,67 @@ export interface AppReleaseInfo {
 
 class GitHubService {
   private readonly baseUrl = 'https://api.github.com';
+  private readonly cache = new Map<string, { data: GitHubRelease | null; timestamp: number }>();
+  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+  private readonly REQUEST_TIMEOUT = 10000; // 10 seconds
   
   /**
-   * Fetch the latest release from a GitHub repository
+   * Fetch the latest release from a GitHub repository with caching and timeout
    */
   async getLatestRelease(owner: string, repo: string): Promise<GitHubRelease | null> {
+    const cacheKey = `${owner}/${repo}`;
+    
+    // Check cache first
+    const cached = this.cache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp) < this.CACHE_DURATION) {
+      return cached.data;
+    }
+    
     try {
-      const response = await fetch(`${this.baseUrl}/repos/${owner}/${repo}/releases/latest`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), this.REQUEST_TIMEOUT);
+      
+      const response = await fetch(`${this.baseUrl}/repos/${owner}/${repo}/releases/latest`, {
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/vnd.github.v3+json',
+          'User-Agent': 'cn-vite-app/1.0'
+        }
+      });
+      
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
-        console.error(`Failed to fetch latest release for ${owner}/${repo}:`, response.statusText);
-        return null;
+        console.warn(`Failed to fetch latest release for ${owner}/${repo}:`, response.statusText);
+        return this.getFallbackData(cacheKey);
       }
       
-      return await response.json();
+      const data = await response.json();
+      
+      // Cache successful response
+      this.cache.set(cacheKey, { data, timestamp: Date.now() });
+      
+      return data;
     } catch (error) {
-      console.error(`Error fetching latest release for ${owner}/${repo}:`, error);
-      return null;
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.warn(`Request timeout for ${owner}/${repo}`);
+      } else {
+        console.warn(`Network error fetching latest release for ${owner}/${repo}:`, error);
+      }
+      return this.getFallbackData(cacheKey);
     }
+  }
+  
+  /**
+   * Get fallback data from cache or return null
+   */
+  private getFallbackData(cacheKey: string): GitHubRelease | null {
+    const cached = this.cache.get(cacheKey);
+    if (cached) {
+      console.info(`Using cached data for ${cacheKey}`);
+      return cached.data;
+    }
+    return null;
   }
 
   /**
@@ -136,20 +179,34 @@ class GitHubService {
   }
 
   /**
-   * Get all app releases info
+   * Get all app releases info with better error handling
    */
   async getAllAppReleases(): Promise<{
     v2rayNG: AppReleaseInfo | null;
     v2rayN: AppReleaseInfo | null;
     flclash: AppReleaseInfo | null;
   }> {
-    const [v2rayNG, v2rayN, flclash] = await Promise.all([
-      this.getV2rayNGRelease(),
-      this.getV2rayNRelease(),
-      this.getFlClashRelease()
-    ]);
+    try {
+      // Try to fetch all releases in parallel with timeout
+      const [v2rayNG, v2rayN, flclash] = await Promise.allSettled([
+        this.getV2rayNGRelease(),
+        this.getV2rayNRelease(),
+        this.getFlClashRelease()
+      ]);
 
-    return { v2rayNG, v2rayN, flclash };
+      return {
+        v2rayNG: v2rayNG.status === 'fulfilled' ? v2rayNG.value : null,
+        v2rayN: v2rayN.status === 'fulfilled' ? v2rayN.value : null,
+        flclash: flclash.status === 'fulfilled' ? flclash.value : null
+      };
+    } catch (error) {
+      console.warn('Failed to fetch some app releases:', error);
+      return {
+        v2rayNG: null,
+        v2rayN: null,
+        flclash: null
+      };
+    }
   }
 }
 
