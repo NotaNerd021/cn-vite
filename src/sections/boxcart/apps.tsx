@@ -39,19 +39,14 @@ interface App {
 
 const appIcons = {
   Streisand:
-    "https://raw.githubusercontent.com/MatinDehghanian/public-assets/refs/heads/main/icons/streisand.jpg",
+    "https://raw.githubusercontent.com/NotaNerd021/Sub1/refs/heads/main/icons/streisand.jpg",
   Shadowrocket:
-    "https://raw.githubusercontent.com/MatinDehghanian/public-assets/refs/heads/main/icons/shadowrocket.png",
+    "https://raw.githubusercontent.com/NotaNerd021/Sub1/refs/heads/main/icons/shadowrocket.png",
   V2rayNG:
-    "https://raw.githubusercontent.com/MatinDehghanian/public-assets/refs/heads/main/icons/v2rayNG.png",
+    "https://raw.githubusercontent.com/NotaNerd021/Sub1/refs/heads/main/icons/v2rayNG.png",
   V2rayN:
-    "https://raw.githubusercontent.com/MatinDehghanian/public-assets/refs/heads/main/icons/v2rayN.png",
-  V2box:
-    "https://raw.githubusercontent.com/MatinDehghanian/public-assets/refs/heads/main/icons/v2box.png",
-  Flclash:
-    "https://raw.githubusercontent.com/MatinDehghanian/public-assets/refs/heads/main/icons/flclash.jpg",
-  SingBox:
-    "https://raw.githubusercontent.com/MatinDehghanian/public-assets/refs/heads/main/icons/singbox.png",
+    "https://raw.githubusercontent.com/NotaNerd021/Sub1/refs/heads/main/icons/v2rayN.png",
+  Happ: "https://raw.githubusercontent.com/NotaNerd021/Sub1/refs/heads/main/icons/happ.jpg",
 };
 
 const AppsTab = ({ url, username }: AppsTabProps) => {
@@ -64,11 +59,9 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
   const [releases, setReleases] = useState<{
     v2rayNG: AppReleaseInfo | null;
     v2rayN: AppReleaseInfo | null;
-    flclash: AppReleaseInfo | null;
   }>({
     v2rayNG: null,
     v2rayN: null,
-    flclash: null,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -87,11 +80,9 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
             : "Failed to fetch app releases";
         console.warn("Failed to fetch app releases:", error);
         setError(errorMessage);
-        // Set fallback releases with empty download URLs
         setReleases({
           v2rayNG: null,
           v2rayN: null,
-          flclash: null,
         });
       } finally {
         setLoading(false);
@@ -109,6 +100,18 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
       content: t("appleContent"),
       apps: [
         {
+          name: "Happ",
+          icon: (
+            <img
+              src={appIcons.Happ}
+              alt="Happ"
+              className="mx-auto h-12 w-12 rounded-lg object-cover"
+            />
+          ),
+          format: `happ://add/{url}`,
+          download: "https://apps.apple.com/us/app/happ-proxy-utility/id6504287215",
+        },
+        {
           name: "Streisand",
           icon: (
             <img
@@ -117,33 +120,8 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
               className="mx-auto h-12 w-12 rounded-lg object-cover"
             />
           ),
-          format: `streisand://import/{url}#MattSub-${username}`,
+          format: `streisand://import/{url}`,
           download: "https://apps.apple.com/us/app/streisand/id6450534064",
-        },
-        {
-          name: "V2box",
-          icon: (
-            <img
-              src={appIcons.V2box}
-              alt="V2box"
-              className="mx-auto h-12 w-12 rounded-lg object-cover"
-            />
-          ),
-          format: `v2box://install-sub?url={url}&name=Mattsub-${username}`,
-          download:
-            "https://apps.apple.com/us/app/v2box-v2ray-client/id6446814690",
-        },
-        {
-          name: "SingBox",
-          icon: (
-            <img
-              src={appIcons.SingBox}
-              alt="SingBox"
-              className="mx-auto h-12 w-12 rounded-lg object-cover"
-            />
-          ),
-          format: `sing-box://import-remote-profile?url={url}#MattSub-${username}`,
-          download: "https://apps.apple.com/us/app/sing-box-vt/id6673731168",
         },
         {
           name: "Shadowrocket",
@@ -166,6 +144,18 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
       content: t("androidContent"),
       apps: [
         {
+          name: "Happ",
+          icon: (
+            <img
+              src={appIcons.Happ}
+              alt="Happ"
+              className="mx-auto h-12 w-12 rounded-lg object-cover"
+            />
+          ),
+          format: `happ://add/{url}`,
+          download: "https://play.google.com/store/apps/details?id=com.happproxy",
+        },
+        {
           name: "V2rayNG",
           icon: (
             <img
@@ -174,37 +164,11 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
               className="mx-auto h-12 w-12 rounded-lg object-cover"
             />
           ),
-          format: `v2rayng://install-config?url={url}#MattSub-${username}`,
+          format: `v2rayng://install-config?url={url}#VIPsub-${username}`,
           download:
             (releases.v2rayNG && typeof releases.v2rayNG === "object"
               ? releases.v2rayNG.downloadUrl
               : "") || "",
-        },
-        {
-          name: "V2box",
-          icon: (
-            <img
-              src={appIcons.V2box}
-              alt="V2box"
-              className="mx-auto h-12 w-12 rounded-lg object-cover"
-            />
-          ),
-          format: `v2box://install-sub?url={url}&name=MattSub-${username}`,
-          download:
-            "https://play.google.com/store/apps/details?id=dev.hexasoftware.v2box",
-        },
-        {
-          name: "SingBox",
-          icon: (
-            <img
-              src={appIcons.SingBox}
-              alt="SingBox"
-              className="mx-auto h-12 w-12 rounded-lg object-cover"
-            />
-          ),
-          format: `sing-box://import-remote-profile?url={url}#MattSub-${username}`,
-          download:
-            "https://play.google.com/store/apps/details?id=io.nekohasekai.sfa&hl=en",
         },
       ],
     },
@@ -226,20 +190,6 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
           download:
             (releases.v2rayN && typeof releases.v2rayN === "object"
               ? releases.v2rayN.downloadUrl
-              : "") || "",
-        },
-        {
-          name: "Flclash",
-          icon: (
-            <img
-              src={appIcons.Flclash}
-              alt="Flclash"
-              className="mx-auto h-12 w-12 rounded-lg object-cover"
-            />
-          ),
-          download:
-            (releases.flclash && typeof releases.flclash === "object"
-              ? releases.flclash.downloadUrl
               : "") || "",
         },
       ],
@@ -274,10 +224,8 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
     setDialogOpen(false);
   };
 
-  // Check if configs tab should be shown based on environment variable
   const showConfigsTab = import.meta.env.VITE_SHOW_CONFIGS_TAB === "true";
 
-  // Show loading state
   if (loading) {
     return (
       <div className="w-full">
@@ -298,7 +246,6 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
     );
   }
 
-  // Show error state
   if (error) {
     return (
       <div className="text-center py-8">
@@ -314,7 +261,6 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
     );
   }
 
-  // Content to render
   const appsContent = (
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -364,7 +310,6 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
           defaultValue="apple"
           className="w-full"
         >
-          {/* Tabs Navigation */}
           <TabsList className="w-full flex justify-center gap-2">
             {OS_TABS.map((tab) => (
               <TabsTrigger
@@ -378,7 +323,6 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
             ))}
           </TabsList>
 
-          {/* Tabs Content */}
           {OS_TABS.map((tab) => (
             <TabsContent className="my-4" key={tab.value} value={tab.value}>
               <Card>
@@ -389,12 +333,9 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {tab?.apps?.map((app) => {
-                      // Check if download URL is missing for GitHub-dependent apps
-                      const isGitHubApp = [
-                        "V2rayNG",
-                        "V2rayN",
-                        "Flclash",
-                      ].includes(app.name);
+                      const isGitHubApp = ["V2rayNG", "V2rayN"].includes(
+                        app.name
+                      );
                       const hasDownloadUrl =
                         app.download && app.download.trim() !== "";
                       const showUnavailable = isGitHubApp && !hasDownloadUrl;
@@ -448,12 +389,10 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
     </>
   );
 
-  // If configs tab is disabled, return content without TabsContent wrapper
   if (!showConfigsTab) {
     return appsContent;
   }
 
-  // Default mode with TabsContent wrapper
   return <TabsContent value="apps">{appsContent}</TabsContent>;
 };
 
