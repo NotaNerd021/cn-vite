@@ -26,7 +26,7 @@ class GitHubService {
   private readonly cache = new Map<string, { data: GitHubRelease | null; timestamp: number }>();
   private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
   private readonly REQUEST_TIMEOUT = 10000; // 10 seconds
-  
+
   /**
    * Fetch the latest release from a GitHub repository with caching and timeout
    */
@@ -152,59 +152,28 @@ class GitHubService {
   }
 
   /**
-   * Get FlClash Windows AMD64 setup download info
-   */
-  async getFlClashRelease(): Promise<AppReleaseInfo | null> {
-    const release = await this.getLatestRelease('chen08209', 'FlClash');
-    if (!release) return null;
-
-    const asset = this.findMatchingAsset(release.assets, [
-      'windows-amd64-setup.exe',
-      'amd64-setup.exe',
-      'windows-setup.exe',
-      'setup.exe'
-    ]);
-
-    if (!asset) {
-      console.warn('No Windows AMD64 setup found in FlClash release');
-      return null;
-    }
-
-    return {
-      version: release.tag_name,
-      downloadUrl: asset.browser_download_url,
-      size: asset.size,
-      publishedAt: release.published_at
-    };
-  }
-
-  /**
    * Get all app releases info with better error handling
    */
   async getAllAppReleases(): Promise<{
     v2rayNG: AppReleaseInfo | null;
     v2rayN: AppReleaseInfo | null;
-    flclash: AppReleaseInfo | null;
   }> {
     try {
       // Try to fetch all releases in parallel with timeout
-      const [v2rayNG, v2rayN, flclash] = await Promise.allSettled([
+      const [v2rayNG, v2rayN] = await Promise.allSettled([
         this.getV2rayNGRelease(),
         this.getV2rayNRelease(),
-        this.getFlClashRelease()
       ]);
 
       return {
         v2rayNG: v2rayNG.status === 'fulfilled' ? v2rayNG.value : null,
         v2rayN: v2rayN.status === 'fulfilled' ? v2rayN.value : null,
-        flclash: flclash.status === 'fulfilled' ? flclash.value : null
       };
     } catch (error) {
       console.warn('Failed to fetch some app releases:', error);
       return {
         v2rayNG: null,
         v2rayN: null,
-        flclash: null
       };
     }
   }
