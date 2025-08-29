@@ -20,17 +20,11 @@ import { CheckIcon, ChevronDownIcon, GlobeIcon, XIcon } from "lucide-react";
 const languages = [
   { code: "fa", label: "Persian" },
   { code: "en", label: "English" },
-  { code: "ru", label: "Русский" },
-  { code: "ar", label: "عربي" },
-  { code: "zh", label: "中国人" },
 ];
 
 const flagIcons = {
   fa: "🇮🇷",
   en: "🇺🇸",
-  ru: "🇷🇺",
-  ar: "🇸🇦",
-  zh: "🇨🇳",
 };
 
 export default function LanguageSelector() {
