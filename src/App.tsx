@@ -164,7 +164,7 @@ function App() {
       : {
           totalTraffic: 0,
           data_limit: 0,
-          expire_date: 0,
+          expire_date: "0",
           status: t("inactive"),
           username: "",
           online_at: "",
@@ -189,16 +189,6 @@ function App() {
           setEndTime(new Date());
           setPeriod("day");
           break;
-        case "six-month":
-          setStartTime(addDays(new Date(), -180));
-          setEndTime(new Date());
-          setPeriod("month");
-          break;
-        case "yearly":
-          setStartTime(addDays(new Date(), -365));
-          setEndTime(new Date());
-          setPeriod("month");
-          break;
         default:
           setStartTime(addDays(new Date(), -1));
           setEndTime(new Date());
@@ -209,7 +199,6 @@ function App() {
 
     const isRTL = language === "fa" || language === "ar";
 
-    // Enhanced error handling with better user feedback
     if (error || chartError) {
       return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4">
@@ -235,7 +224,6 @@ function App() {
       );
     }
 
-    // Loading state with skeleton
     if (isLoading || !data) {
       return (
         <div className="@container/main flex flex-1 flex-col gap-2 p-5">
@@ -263,7 +251,7 @@ function App() {
         className="@container/main flex flex-1 flex-col gap-2 p-5"
       >
         <Helmet>
-          <title>{data?.username} Sub Stats</title>
+          <title>{`${data?.username || 'Loading...'} Sub Stats`}</title>
           <meta
             name="description"
             content="Powered by https://github.com/NotANerd021"
@@ -284,9 +272,16 @@ function App() {
                 }
               />
             </div>
-            <h1 className="scroll-m-20 text-3xl font-normal tracking-tight lg:text-4xl text-center py-5 grid-cols-5">
-              {t("subStats")}
-            </h1>
+            <div className="flex items-center justify-center gap-2 md:gap-3 py-5">
+              <img
+                src="https://raw.githubusercontent.com/NotaNerd021/Sub1/refs/heads/main/icons/logo1.png"
+                alt="Service Logo"
+                className="h-8 w-8 md:h-10 md:w-10"
+              />
+              <h1 className="scroll-m-20 text-3xl font-normal tracking-tight lg:text-4xl">
+                {t("subStats")}
+              </h1>
+            </div>
           </div>
         </div>
         <Suspense fallback="loading...">
@@ -300,7 +295,7 @@ function App() {
               />
               <Chart
                 chartData={isMarzneshin ? chartData?.usages : chartData}
-                totalUsage={isMarzneshin && chartData?.total}
+                totalUsage={(isMarzneshin && chartData?.total) || 0}
                 activeChart={activeChart}
                 setActiveChart={updateChart}
               />
