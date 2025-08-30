@@ -20,8 +20,6 @@ export const SelectDateView = ({
       <SelectDateViewItem interval="daily"> 24H</SelectDateViewItem>
       <SelectDateViewItem interval="weekly"> 7D</SelectDateViewItem>
       <SelectDateViewItem interval="monthly"> 30D</SelectDateViewItem>
-      <SelectDateViewItem interval="six-month"> 6M</SelectDateViewItem>
-      <SelectDateViewItem interval="yearly"> 12M</SelectDateViewItem>
     </RadioGroup>
   );
 };
@@ -34,7 +32,7 @@ const SelectDateViewItem: FC<PropsWithChildren & { interval: string }> = ({
     <RadioGroupItem value={interval} id={interval} className="sr-only peer" />
     <Label
       htmlFor={interval}
-      className="dark:peer-data-[state=checked]:bg-primary-foreground  dark:peer-data-[state=checked]:border-primary peer-data-[state=checked]:border-primary peer-data-[state=checked]:border-1 border-0 peer-data-[state=checked]:text-primary-foreground dark:peer-data-[state=checked]:text-primary peer-data-[state=checked]:bg-primary text-xs rounded-full py-1 px-2 transition-colors"
+      className="dark:peer-data-[state=checked]:bg-primary-foreground  dark:peer-data-[state=checked]:border-primary peer-data-[state=checked]:border-1 border-0 peer-data-[state=checked]:text-primary-foreground dark:peer-data-[state=checked]:text-primary peer-data-[state=checked]:bg-primary text-xs rounded-full py-1 px-2 transition-colors"
     >
       {children}
     </Label>
