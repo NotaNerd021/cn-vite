@@ -119,4 +119,11 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  .dark body {
+    background-image: url('https://raw.githubusercontent.com/NotaNerd021/Sub1/refs/heads/main/icons/VIPBackground.webp');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+  }
 }

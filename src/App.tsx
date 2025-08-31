@@ -272,16 +272,16 @@ function App() {
                 }
               />
             </div>
-            <div className="flex items-center justify-center gap-2 md:gap-3 py-5">
-              <img
-                src="https://raw.githubusercontent.com/NotaNerd021/Sub1/refs/heads/main/icons/logo1.png"
-                alt="Service Logo"
-                className="h-8 w-8 md:h-10 md:w-10"
-              />
-              <h1 className="scroll-m-20 text-3xl font-normal tracking-tight lg:text-4xl">
-                {t("subStats")}
-              </h1>
-            </div>
+            <div className="flex items-center justify-center gap-3 md:gap-4 py-5">
+  <img
+    src="https://raw.githubusercontent.com/NotaNerd021/Sub1/refs/heads/main/icons/logo1.png"
+    alt="Service Logo"
+    className="h-10 w-10 md:h-12 md:w-12"
+  />
+  <h1 className="scroll-m-20 text-3xl font-normal tracking-tight lg:text-4xl">
+    {t("subStats")}
+  </h1>
+</div>
           </div>
         </div>
         <Suspense fallback="loading...">
