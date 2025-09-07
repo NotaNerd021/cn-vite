@@ -10,7 +10,7 @@ import { Box } from "@/sections/boxcart/box";
 import QrCode from "./components/qrcode";
 import { Button } from "./components/ui/button";
 import { QrCodeIcon, MessageSquare } from "lucide-react";
-import { getStatus } from "./lib/utils";
+import { getStatus, cn } from "./lib/utils";
 import { Helmet } from "react-helmet";
 import { NetworkMonitor } from "@/lib/performance";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -33,8 +33,8 @@ interface CardsData {
 
 const fetcher = async (url: string) => {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
-  
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+
   try {
     const res = await fetch(url, {
       signal: controller.signal,
@@ -276,34 +276,38 @@ function App() {
           />
         </Helmet>
         <div className="flex flex-col-reverse gap-4 justify-center">
-          <div className="block md:flex justify-between flex-row-reverse mx-0 md:mx-6">
+          <div
+            className={cn("block md:flex justify-between mx-0 md:mx-6", {
+              "flex-row-reverse": isRTL,
+            })}
+          >
             <div className="flex flex-row items-center justify-center mx-5 md:mx-0 gap-3">
-  <LanguageSelector />
-  <ModeToggle />
-  <QrCode
-    link={getAdjustedUrl(data?.subscription_url)}
-    title={t("subQrcode")}
-    trigger={
-      <Button variant="outline" size="icon">
-        <QrCodeIcon className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all" />
-      </Button>
-    }
-  />
-  <TooltipProvider>
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <a href="https://t.me/VIPsub13" target="_blank" rel="noopener noreferrer">
-          <Button variant="outline" size="icon">
-            <MessageSquare className="h-[1.2rem] w-[1.2rem]" />
-          </Button>
-        </a>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>{t("support")}</p>
-      </TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
-</div>
+              <LanguageSelector />
+              <ModeToggle />
+              <QrCode
+                link={getAdjustedUrl(data?.subscription_url)}
+                title={t("subQrcode")}
+                trigger={
+                  <Button variant="outline" size="icon">
+                    <QrCodeIcon className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all" />
+                  </Button>
+                }
+              />
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <a href="https://t.me/VIPsub13" target="_blank" rel="noopener noreferrer">
+                      <Button variant="outline" size="icon">
+                        <MessageSquare className="h-[1.2rem] w-[1.2rem]" />
+                      </Button>
+                    </a>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{t("support")}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <div className="flex items-center justify-center gap-3 md:gap-4 py-5">
               <img
                 src="https://raw.githubusercontent.com/NotaNerd021/Sub1/refs/heads/main/icons/logo1.png"
@@ -319,7 +323,11 @@ function App() {
         <Suspense fallback="loading...">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
             {/* --- MOBILE VIEW --- */}
-            <Tabs defaultValue="overview" className="w-full md:hidden">
+            <Tabs
+              defaultValue="overview"
+              className="w-full md:hidden"
+              dir={isRTL ? "rtl" : "ltr"}
+            >
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="overview">{t('tabs.overview')}</TabsTrigger>
                 <TabsTrigger value="configs">{t('tabs.configs')}</TabsTrigger>

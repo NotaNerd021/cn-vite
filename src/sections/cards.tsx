@@ -1,11 +1,18 @@
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {calculateRemainingTime, formatDate, formatTraffic, naiveAsUTC} from "@/lib/utils";
+import {
+  calculateRemainingTime,
+  formatDate,
+  formatTraffic,
+  naiveAsUTC,
+} from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { Progress } from "@/components/ui/progress";
 
 interface SectionCardsProps {
   cardsData: {
@@ -28,10 +35,10 @@ export function SectionCards({ cardsData }: SectionCardsProps) {
   const { data_limit, totalTraffic, expire_date, status, username, online_at } =
     cardsData;
 
-  const remainingTrafficBytes = data_limit ? data_limit - totalTraffic : null;
+  const remainingTrafficBytes = data_limit > 0 ? data_limit - totalTraffic : 0;
   let remainedTraffic: string;
 
-  if (remainingTrafficBytes === null) {
+  if (data_limit === 0) {
     remainedTraffic = t("infinity");
   } else if (remainingTrafficBytes < 0) {
     remainedTraffic = t("limited");
@@ -39,23 +46,68 @@ export function SectionCards({ cardsData }: SectionCardsProps) {
     remainedTraffic = formatTraffic(remainingTrafficBytes, t);
   }
 
+  const usagePercentage =
+    data_limit > 0 ? (totalTraffic / data_limit) * 100 : 0;
+
   return (
-    <div
-      dir={isRTL ? "rtl" : "ltr"}
-      className="@xl/main:grid-cols-2 @5xl/main:grid-cols-3 grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card lg:px-6"
-    >
-      <InfoCard label={t("username")} value={t(username)} />
-      <InfoCard label={t("status")} value={t(status)} />
-      <InfoCard
-        label={t("online_at")}
-        value={formatDate(naiveAsUTC(online_at) ?? "")}
-      />
-      <InfoCard label={t("data_limit")} value={formatTraffic(data_limit, t)} />
-      <InfoCard label={t("remainingTraffic")} value={remainedTraffic} />
-      <InfoCard
-        label={t("remainingTime")}
-        value={calculateRemainingTime(expire_date, t)}
-      />
+    <div className="space-y-4 px-4 lg:px-6">
+      {/* --- Main Hero Grid --- */}
+      <div className="grid grid-cols-1 @xl/main:grid-cols-2 gap-4">
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardDescription>{t("remainingTraffic")}</CardDescription>
+            <CardTitle className="text-3xl font-bold">
+              {remainedTraffic}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {data_limit > 0 && (
+              <>
+                <Progress value={usagePercentage} className="h-2" />
+                <div className="flex items-center flex-nowrap text-xs text-muted-foreground mt-2">
+                  {isRTL ? (
+                    <>
+                      <span>{formatTraffic(totalTraffic, t)}</span>
+                      <span className="mx-1">از</span>
+                      <span>{formatTraffic(data_limit, t)}</span>
+                      <span className="mr-1">مصرف شده</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>{formatTraffic(totalTraffic, t)}</span>
+                      <span className="mx-1">of</span>
+                      <span>{formatTraffic(data_limit, t)}</span>
+                      <span className="ml-1">used</span>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardDescription>{t("remainingTime")}</CardDescription>
+            <CardTitle className="text-3xl font-bold">
+              {calculateRemainingTime(expire_date, t)}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+      </div>
+
+      {/* --- Secondary Info Grid --- */}
+      <div className="grid grid-cols-2 @xl/main:grid-cols-4 gap-4">
+        <InfoCard label={t("username")} value={username} />
+        <InfoCard label={t("status")} value={t(status)} />
+        <InfoCard
+          label={t("online_at")}
+          value={formatDate(naiveAsUTC(online_at) ?? "")}
+        />
+        <InfoCard
+          label={t("data_limit")}
+          value={formatTraffic(data_limit, t)}
+        />
+      </div>
     </div>
   );
 }
@@ -68,12 +120,10 @@ function InfoCard({
   readonly value: string;
 }) {
   return (
-    <Card className="@container/card">
-      <CardHeader className="relative">
+    <Card>
+      <CardHeader>
         <CardDescription>{label}</CardDescription>
-        <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-          {value}
-        </CardTitle>
+        <CardTitle className="text-xl font-semibold">{value}</CardTitle>
       </CardHeader>
     </Card>
   );
