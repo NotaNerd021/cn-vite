@@ -20,6 +20,7 @@ export const SelectDateView = ({
       <SelectDateViewItem interval="daily"> 24H</SelectDateViewItem>
       <SelectDateViewItem interval="weekly"> 7D</SelectDateViewItem>
       <SelectDateViewItem interval="monthly"> 30D</SelectDateViewItem>
+      <SelectDateViewItem interval="three-month"> 3M</SelectDateViewItem>
     </RadioGroup>
   );
 };

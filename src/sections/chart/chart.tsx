@@ -1,7 +1,6 @@
 "use client";
 
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
-
 import {
   Card,
   CardContent,
@@ -17,6 +16,7 @@ import {
 } from "@/components/ui/chart";
 import { useTranslation } from "react-i18next";
 import { SelectDateView } from "@/sections/chart/time-picker";
+import { Loader2 } from "lucide-react";
 
 type MarzneshinFormat = [string, number][];
 type MarzbanFormat = {
@@ -30,6 +30,7 @@ interface ChartProps {
   totalUsage: number;
   activeChart: string;
   setActiveChart: (chart: string) => void;
+  isChartLoading?: boolean;
 }
 
 function normalizeChartData(
@@ -39,7 +40,6 @@ function normalizeChartData(
     return data;
   }
 
-  // Get the first (and typically only) key from stats object
   const statsKey = Object.keys(data?.stats || {})[0];
   const statsArray = data?.stats?.[statsKey];
 
@@ -63,7 +63,6 @@ function getTotalUsage(
   if (Array.isArray(data)) {
     statsArray = data;
   } else {
-    // Get the first (and typically only) key from stats object
     const statsKey = Object.keys(data || {})[0];
     statsArray = data?.[statsKey] || [];
   }
@@ -78,6 +77,7 @@ export function Chart({
   totalUsage,
   activeChart,
   setActiveChart,
+  isChartLoading,
 }: ChartProps) {
   const {
     t,
@@ -119,6 +119,11 @@ export function Chart({
     const options: Intl.DateTimeFormatOptions = {};
 
     switch (activeChart) {
+      case "three-month":
+        options.day = "numeric";
+        options.month = "short";
+        break;
+        
       case "monthly":
         options.day = "numeric";
         options.month = "short";
@@ -135,15 +140,6 @@ export function Chart({
         options.minute = "numeric";
         options.hour12 = false;
         return date.toLocaleTimeString("en-US", options);
-
-      case "six-month":
-        options.month = "short";
-        break;
-
-      case "yearly":
-        options.year = "numeric";
-        options.month = "short";
-        break;
 
       default:
         options.day = "numeric";
@@ -182,50 +178,57 @@ export function Chart({
         </div>
       </CardHeader>
       <CardContent className="px-2 sm:p-6">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-[200px] w-full"
-        >
-          <BarChart
-            accessibilityLayer
-            data={transformedData}
-            margin={{
-              left: 12,
-              right: 12,
-            }}
+        <div className="relative">
+          {isChartLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-card/80 z-10 rounded-lg">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          )}
+          <ChartContainer
+            config={chartConfig}
+            className="aspect-auto h-[200px] w-full"
           >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              minTickGap={14}
-              tickFormatter={(value) => formatter(value)}
-            />
-            <YAxis
-              direction={"ltr"}
-              dataKey="usage"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={12}
-              tickFormatter={(value) => formatTraffic2Degits(value)}
-            />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  className="w-[150px]"
-                  nameKey="usage"
-                  labelFormatter={(value) => formatter(value)}
-                  formatter={(value) =>
-                    typeof value === "number" ? formatTraffic(value, t) : ""
-                  }
-                />
-              }
-            />
-            <Bar dataKey={"usage"} fill={`var(--chart-1`} />
-          </BarChart>
-        </ChartContainer>
+            <BarChart
+              accessibilityLayer
+              data={transformedData}
+              margin={{
+                left: 12,
+                right: 12,
+              }}
+            >
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="date"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={14}
+                tickFormatter={(value) => formatter(value)}
+              />
+              <YAxis
+                direction={"ltr"}
+                dataKey="usage"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={12}
+                tickFormatter={(value) => formatTraffic2Degits(value)}
+              />
+              <ChartTooltip
+                content={
+                  <ChartTooltipContent
+                    className="w-[150px]"
+                    nameKey="usage"
+                    labelFormatter={(value) => formatter(value)}
+                    formatter={(value) =>
+                      typeof value === "number" ? formatTraffic(value, t) : ""
+                    }
+                  />
+                }
+              />
+              <Bar dataKey={"usage"} fill="var(--color-chart-1)" />
+            </BarChart>
+          </ChartContainer>
+        </div>
         <div className="flex justify-center mt-5">
           <SelectDateView
             setTimeRange={setActiveChart}
@@ -241,14 +244,11 @@ const formatTraffic = (bytes: number | null, t: (key: string) => string) => {
   if (bytes === null) {
     return t("infinity");
   }
-
   if (bytes < 0) {
     return t("GB");
   }
-
   const units = [t("B"), t("KB"), t("MB"), t("GB"), t("TB")];
   const thresholds = [1, 1024, 1024 ** 2, 1024 ** 3];
-
   for (let i = 0; i < thresholds.length; i++) {
     if (bytes < thresholds[i] * 1024) {
       return `${(bytes / thresholds[i]).toFixed()} ${units[i]}`;
@@ -261,14 +261,11 @@ const formatTraffic2Degits = (bytes: number | null) => {
   if (bytes === null) {
     return "infinity";
   }
-
   if (bytes < 0) {
     return "GB";
   }
-
   const units = ["B", "KB", "MB", "GB", "TB"];
   const thresholds = [1, 1024, 1024 ** 2, 1024 ** 3];
-
   for (let i = 0; i < thresholds.length; i++) {
     if (bytes < thresholds[i] * 1024) {
       return `${(bytes / thresholds[i]).toFixed()} ${units[i]}`;

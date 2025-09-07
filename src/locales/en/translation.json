@@ -58,5 +58,11 @@
   "networkError": "Network Error",
   "timeout": "Request timeout",
   "failedToLoad": "Failed to load data",
-  "unavailable": "Unavailable"
+  "unavailable": "Unavailable",
+  "support": "Telegram Support",
+  "tabs": {
+  "overview": "Overview",
+  "configs": "Add Config",
+  "usage": "Usage Chart"
+}
 }

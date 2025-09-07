@@ -9,10 +9,18 @@ import useSWR from "swr";
 import { Box } from "@/sections/boxcart/box";
 import QrCode from "./components/qrcode";
 import { Button } from "./components/ui/button";
-import { QrCodeIcon } from "lucide-react";
+import { QrCodeIcon, MessageSquare } from "lucide-react";
 import { getStatus } from "./lib/utils";
 import { Helmet } from "react-helmet";
 import { NetworkMonitor } from "@/lib/performance";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { motion } from "framer-motion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface CardsData {
   totalTraffic: number;
@@ -70,7 +78,6 @@ function App() {
   const [endTime, setEndTime] = useState(new Date());
   const [period, setPeriod] = useState("hour");
 
-  // Initialize network monitor
   useEffect(() => {
     NetworkMonitor.init();
   }, []);
@@ -84,8 +91,8 @@ function App() {
       errorRetryCount: 3,
       errorRetryInterval: 2000,
       revalidateOnFocus: false,
-      refreshInterval: 30000, // Refresh every 30 seconds
-      dedupingInterval: 10000, // Dedupe requests within 10 seconds
+      refreshInterval: 30000,
+      dedupingInterval: 10000,
       onError: (error) => {
         console.warn('Failed to fetch user info:', error);
       }
@@ -126,14 +133,14 @@ function App() {
         errorRetryCount: 2,
         errorRetryInterval: 3000,
         revalidateOnFocus: false,
-        dedupingInterval: 30000, // Cache config data for 30 seconds
+        dedupingInterval: 30000,
         onError: (error) => {
           console.warn("Failed to fetch config data:", error);
         },
       }
     );
 
-    const { data: chartData, error: chartError } = useSWR(
+    const { data: chartData, error: chartError, isValidating: isChartLoading } = useSWR(
       `${import.meta.env?.VITE_PANEL_DOMAIN ?? window.location.origin}${
         window.location.pathname
       }/usage?start=${startTime.toISOString()}&end=${endTime.toISOString()}${
@@ -144,7 +151,7 @@ function App() {
         errorRetryCount: 2,
         errorRetryInterval: 2000,
         revalidateOnFocus: false,
-        refreshInterval: 60000, // Refresh chart data every minute
+        refreshInterval: 60000,
         dedupingInterval: 5000,
         onError: (error) => {
           console.warn("Failed to fetch chart data:", error);
@@ -186,6 +193,11 @@ function App() {
           break;
         case "monthly":
           setStartTime(addDays(new Date(), -30));
+          setEndTime(new Date());
+          setPeriod("day");
+          break;
+        case "three-month":
+          setStartTime(addDays(new Date(), -90));
           setEndTime(new Date());
           setPeriod("day");
           break;
@@ -245,6 +257,12 @@ function App() {
       );
     }
 
+    const motionProps = {
+      initial: { opacity: 0, y: 10 },
+      animate: { opacity: 1, y: 0 },
+      transition: { duration: 0.4 },
+    };
+
     return (
       <div
         dir={isRTL ? "rtl" : "ltr"}
@@ -260,45 +278,97 @@ function App() {
         <div className="flex flex-col-reverse gap-4 justify-center">
           <div className="block md:flex justify-between flex-row-reverse mx-0 md:mx-6">
             <div className="flex flex-row items-center justify-center mx-5 md:mx-0 gap-3">
-              <LanguageSelector />
-              <ModeToggle />
-              <QrCode
-                link={getAdjustedUrl(data?.subscription_url)}
-                title={t("subQrcode")}
-                trigger={
-                  <Button variant="outline" size="icon">
-                    <QrCodeIcon className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all" />
-                  </Button>
-                }
-              />
-            </div>
-            <div className="flex items-center justify-center gap-3 md:gap-4 py-5">
-  <img
-    src="https://raw.githubusercontent.com/NotaNerd021/Sub1/refs/heads/main/icons/logo1.png"
-    alt="Service Logo"
-    className="h-10 w-10 md:h-12 md:w-12"
+  <LanguageSelector />
+  <ModeToggle />
+  <QrCode
+    link={getAdjustedUrl(data?.subscription_url)}
+    title={t("subQrcode")}
+    trigger={
+      <Button variant="outline" size="icon">
+        <QrCodeIcon className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all" />
+      </Button>
+    }
   />
-  <h1 className="scroll-m-20 text-3xl font-normal tracking-tight lg:text-4xl">
-    {t("subStats")}
-  </h1>
+  <TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <a href="https://t.me/VIPsub13" target="_blank" rel="noopener noreferrer">
+          <Button variant="outline" size="icon">
+            <MessageSquare className="h-[1.2rem] w-[1.2rem]" />
+          </Button>
+        </a>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>{t("support")}</p>
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
 </div>
+            <div className="flex items-center justify-center gap-3 md:gap-4 py-5">
+              <img
+                src="https://raw.githubusercontent.com/NotaNerd021/Sub1/refs/heads/main/icons/logo1.png"
+                alt="Service Logo"
+                className="h-10 w-10 md:h-12 md:w-12"
+              />
+              <h1 className="scroll-m-20 text-3xl font-normal tracking-tight lg:text-4xl">
+                {t("subStats")}
+              </h1>
+            </div>
           </div>
         </div>
         <Suspense fallback="loading...">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-            <SectionCards cardsData={cardsData} />
-            <div className="grid grid-cols-1 md:grid-cols-2 md:gap-0 gap-4">
-              <Box
-                username={data?.username}
-                SubURL={getAdjustedUrl(data?.subscription_url)}
-                configs={configData}
-              />
-              <Chart
-                chartData={isMarzneshin ? chartData?.usages : chartData}
-                totalUsage={(isMarzneshin && chartData?.total) || 0}
-                activeChart={activeChart}
-                setActiveChart={updateChart}
-              />
+            {/* --- MOBILE VIEW --- */}
+            <Tabs defaultValue="overview" className="w-full md:hidden">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="overview">{t('tabs.overview')}</TabsTrigger>
+                <TabsTrigger value="configs">{t('tabs.configs')}</TabsTrigger>
+                <TabsTrigger value="usage">{t('tabs.usage')}</TabsTrigger>
+              </TabsList>
+              <TabsContent value="overview" className="mt-4">
+                <motion.div key="overview" {...motionProps}>
+                  <SectionCards cardsData={cardsData} />
+                </motion.div>
+              </TabsContent>
+              <TabsContent value="configs" className="mt-4">
+                <motion.div key="configs" {...motionProps}>
+                  <Box
+                    username={data?.username}
+                    SubURL={getAdjustedUrl(data?.subscription_url)}
+                    configs={configData}
+                  />
+                </motion.div>
+              </TabsContent>
+              <TabsContent value="usage" className="mt-4">
+                <motion.div key="usage" {...motionProps}>
+                  <Chart
+                    isChartLoading={isChartLoading}
+                    chartData={isMarzneshin ? chartData?.usages : chartData}
+                    totalUsage={(isMarzneshin && chartData?.total) || 0}
+                    activeChart={activeChart}
+                    setActiveChart={updateChart}
+                  />
+                </motion.div>
+              </TabsContent>
+            </Tabs>
+
+            {/* --- DESKTOP VIEW --- */}
+            <div className="hidden md:flex flex-col gap-4 md:gap-6">
+              <SectionCards cardsData={cardsData} />
+              <div className="grid grid-cols-1 md:grid-cols-2 md:gap-0 gap-4">
+                <Box
+                  username={data?.username}
+                  SubURL={getAdjustedUrl(data?.subscription_url)}
+                  configs={configData}
+                />
+                <Chart
+                  isChartLoading={isChartLoading}
+                  chartData={isMarzneshin ? chartData?.usages : chartData}
+                  totalUsage={(isMarzneshin && chartData?.total) || 0}
+                  activeChart={activeChart}
+                  setActiveChart={updateChart}
+                />
+              </div>
             </div>
           </div>
         </Suspense>

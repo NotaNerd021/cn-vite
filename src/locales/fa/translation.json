@@ -54,5 +54,11 @@
   "configurationDescription": "یک عمل را برای ادامه با این برنامه انتخاب کنید",
   "configurationURL": "آدرس لینک سابسکریپشن",
   "downloadApp": "دانلود برنامه",
-  "importConfig": "اضافه کردن سابسکریپشن"
+  "importConfig": "اضافه کردن سابسکریپشن",
+  "support": "پشتیبانی تلگرام",
+  "tabs": {
+    "overview": "اطلاعات حساب",
+    "configs": "کانفیگ ها",
+    "usage": "نمودار مصرف"
+  }
 }
