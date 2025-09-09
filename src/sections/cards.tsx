@@ -49,6 +49,22 @@ export function SectionCards({ cardsData }: SectionCardsProps) {
   const usagePercentage =
     data_limit > 0 ? (totalTraffic / data_limit) * 100 : 0;
 
+  // --- Time Percentage Calculation ---
+  let timePercentage = 0;
+  if (online_at && expire_date !== "0") {
+    const startTime = new Date(online_at).getTime();
+    const endTime = new Date(expire_date).getTime();
+    const now = new Date().getTime();
+
+    const totalDuration = endTime - startTime;
+    const elapsedDuration = now - startTime;
+
+    if (totalDuration > 0) {
+      timePercentage = Math.min(100, (elapsedDuration / totalDuration) * 100);
+    }
+  }
+
+
   return (
     <div className="space-y-4 px-4 lg:px-6">
       {/* --- Main Hero Grid --- */}
@@ -92,6 +108,11 @@ export function SectionCards({ cardsData }: SectionCardsProps) {
               {calculateRemainingTime(expire_date, t)}
             </CardTitle>
           </CardHeader>
+          <CardContent>
+            {online_at && expire_date !== "0" && (
+              <Progress value={timePercentage} className="h-2" />
+            )}
+          </CardContent>
         </Card>
       </div>
 
