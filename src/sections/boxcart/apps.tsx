@@ -40,8 +40,6 @@ interface App {
 const appIcons = {
   Streisand:
     "https://raw.githubusercontent.com/NotaNerd021/Sub1/refs/heads/main/icons/streisand.jpg",
-  Shadowrocket:
-    "https://raw.githubusercontent.com/NotaNerd021/Sub1/refs/heads/main/icons/shadowrocket.png",
   V2rayNG:
     "https://raw.githubusercontent.com/NotaNerd021/Sub1/refs/heads/main/icons/v2rayNG.png",
   V2rayN:
@@ -123,18 +121,6 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
           format: `streisand://import/{url}`,
           download: "https://apps.apple.com/us/app/streisand/id6450534064",
         },
-        {
-          name: "Shadowrocket",
-          icon: (
-            <img
-              src={appIcons.Shadowrocket}
-              alt="Shadowrocket"
-              className="mx-auto h-12 w-12 rounded-lg object-cover"
-            />
-          ),
-          isCustom: true,
-          download: "https://apps.apple.com/us/app/shadowrocket/id932747118",
-        },
       ],
     },
     {
@@ -208,10 +194,6 @@ const AppsTab = ({ url, username }: AppsTabProps) => {
     if (!selectedApp) return;
     if (selectedApp.format) {
       window.open(selectedApp.format.replace("{url}", url), "_blank");
-    } else if (selectedApp.isCustom) {
-      const encodedURL = btoa(url);
-      const shadowrocketLink = "sub://" + encodedURL;
-      window.location.href = shadowrocketLink;
     }
     setDialogOpen(false);
   };
