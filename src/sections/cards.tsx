@@ -13,6 +13,7 @@ import {
 } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { Progress } from "@/components/ui/progress";
+import { subDays } from "date-fns";
 
 interface SectionCardsProps {
   cardsData: {
@@ -49,11 +50,12 @@ export function SectionCards({ cardsData }: SectionCardsProps) {
   const usagePercentage =
     data_limit > 0 ? (totalTraffic / data_limit) * 100 : 0;
 
-  // --- Time Percentage Calculation ---
+  // --- Corrected Time Percentage Calculation ---
   let timePercentage = 0;
-  if (online_at && expire_date !== "0") {
-    const startTime = new Date(online_at).getTime();
+  if (expire_date !== "0") {
     const endTime = new Date(expire_date).getTime();
+    // Assume a 30-day subscription period ending at the expire_date
+    const startTime = subDays(new Date(expire_date), 30).getTime();
     const now = new Date().getTime();
 
     const totalDuration = endTime - startTime;
@@ -109,7 +111,7 @@ export function SectionCards({ cardsData }: SectionCardsProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {online_at && expire_date !== "0" && (
+            {expire_date !== "0" && (
               <Progress value={timePercentage} className="h-2" />
             )}
           </CardContent>
